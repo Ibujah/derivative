@@ -1,6 +1,7 @@
 #ifndef _APPLICATION_H_
 #define _APPLICATION_H_
 
+
 class Zero
 {
     public:
@@ -54,6 +55,17 @@ class Plus
         };
 };
 
+template<typename O1, typename O2>
+class Mult
+{
+    public:
+        template<typename ...Args>
+        static inline double eval(Args... args)
+        {
+            return O1::eval(args...)*O2::eval(args...);
+        };
+};
+
 template<typename F, typename A>
 struct Der {};
 
@@ -85,6 +97,12 @@ template<typename O1, typename O2, typename A>
 struct Der<Plus<O1,O2>, A>
 {
     using der = Plus<typename Der<O1,A>::der,typename Der<O2,A>::der>;
+};
+
+template<typename O1, typename O2, typename A>
+struct Der<Mult<O1,O2>, A>
+{
+    using der = Plus< Mult<typename Der<O1,A>::der,O2>, Mult<O1,typename Der<O2,A>::der> >;
 };
 
 #endif//_APPLICATION_H_
