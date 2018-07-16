@@ -27,20 +27,22 @@ int main()
     
     std::cout << "Hello world!" << std::endl;
     
-    std::cout << "X " << X::eval(0,1,2) << std::endl;
-    std::cout << "Y " << Y::eval(0,1,2) << std::endl;
-    std::cout << "F " << F::eval(2,1) << std::endl;
-    std::cout << "dFdX " << dFdX::eval(0) << std::endl;
+    double x = 1;
+    double y = 2;
+    std::cout << X::write() << " " << X::eval(x,y) << std::endl;
+    std::cout << Y::write() << " " << Y::eval(x,y) << std::endl;
+    std::cout << F::write() << " " << F::eval(x,y) << std::endl;
+    std::cout << dFdX::write() << " " << dFdX::eval(x) << std::endl;
     std::cout << std::endl;
 
-    std::cout << "G " << G::eval(2) << std::endl;
-    std::cout << "dGdX " << dGdX::eval(0) << std::endl;
-    std::cout << "ddGddX " << ddGddX::eval(0) << std::endl;
+    std::cout << G::write() << " " << G::eval(x) << std::endl;
+    std::cout << dGdX::write() << " " << dGdX::eval(x) << std::endl;
+    std::cout << ddGddX::write() << " " << ddGddX::eval(x) << std::endl;
     std::cout << std::endl;
 
-    std::cout << "H " << H::eval(2) << std::endl;
-    std::cout << "dHdX " << dHdX::eval(2) << std::endl;
-    std::cout << "ddHddX " << ddHddX::eval(2) << std::endl;
+    std::cout << H::write() << " " << H::eval(x) << std::endl;
+    std::cout << dHdX::write() << " " << dHdX::eval(x) << std::endl;
+    std::cout << ddHddX::write() << " " << ddHddX::eval(x) << std::endl;
     // std::cout << Y::eval(0) << std::endl; // error
 
     return 0;

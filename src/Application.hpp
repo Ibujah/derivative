@@ -10,6 +10,10 @@ class Zero
         {
             return 0;
         };
+        static std::string write()
+        {
+            return "0";
+        }
 };
 
 class One
@@ -20,6 +24,10 @@ class One
         {
             return 1;
         };
+        static std::string write()
+        {
+            return "1";
+        }
 };
 
 template<unsigned int n>
@@ -31,6 +39,10 @@ class Argument
         {
             return Argument<n-1>::eval(args...);
         };
+        static std::string write()
+        {
+            return "x" + std::to_string(n);
+        }
 };
 
 template<>
@@ -42,6 +54,10 @@ class Argument<0>
         {
             return x;
         };
+        static std::string write()
+        {
+            return "x0";
+        }
 };
 
 template<typename O1, typename O2>
@@ -53,6 +69,10 @@ class Plus
         {
             return O1::eval(args...)+O2::eval(args...);
         };
+        static std::string write()
+        {
+            return "(" + O1::write() + "+" + O2::write() + ")";
+        }
 };
 
 template<typename O1, typename O2>
@@ -64,6 +84,10 @@ class Mult
         {
             return O1::eval(args...)*O2::eval(args...);
         };
+        static std::string write()
+        {
+            return O1::write() + "." + O2::write();
+        }
 };
 
 template<typename F, typename A>
