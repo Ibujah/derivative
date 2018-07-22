@@ -4,6 +4,9 @@
 using X = Argument<0>;
 using Y = Argument<1>;
 using Z = Argument<2>;
+using A1 = Parameter<1>;
+using A2 = Parameter<2>;
+using A3 = Parameter<3>;
 using F = Plus<X,Y>;
 using G = Plus<X,X>;
 using H = Mult<X,X>;
@@ -12,19 +15,10 @@ using dGdX = Der<G,X>::der;
 using dHdX = Der<H,X>::der;
 using ddGddX = Der<dGdX,X>::der;
 using ddHddX = Der<dHdX,X>::der;
+using F1 = Plus<A1,A2>;
 
 int main()
 {
-    // what I want:
-    // f(x) = x+4
-    // Plus<X,4> f;
-    // g(x) = (4+x)*(2*x)
-    // Mul<Plus<X,4>,Mul<2,X> > g;
-    // h(x) = g'(x)
-    // auto h = Der<X>(g);
-    // u(x,y) = x+y
-    // Plus<X,Y> u;
-    
     std::cout << "Hello world!" << std::endl;
     
     double x = 1;
@@ -44,6 +38,8 @@ int main()
     std::cout << dHdX::write() << " " << dHdX::eval(x) << std::endl;
     std::cout << ddHddX::write() << " " << ddHddX::eval(x) << std::endl;
     // std::cout << Y::eval(0) << std::endl; // error
+    
+    std::cout << F1::write(param<2>(4.0,2.0)) << " " << F1::eval(param<2>(4.0,2.0)) << std::endl;
 
     return 0;
 }
