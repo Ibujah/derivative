@@ -1,136 +1,11 @@
 #ifndef _APPLICATION_H_
 #define _APPLICATION_H_
 
+#include "Integers.hpp"
+#include "Parameters.hpp"
+#include "Arguments.hpp"
 
-class Zero
-{
-    public:
-        template<typename ...Args>
-        static inline double eval(Args... args)
-        {
-            return 0;
-        };
-        static std::string write()
-        {
-            return "0";
-        }
-};
-
-class One
-{
-    public:
-        template<typename ...Args>
-        static inline double eval(Args... args)
-        {
-            return 1;
-        };
-        static std::string write()
-        {
-            return "1";
-        }
-};
-
-template<unsigned int n>
-class Parameter
-{
-    public:
-        double a;
-        Parameter<n-1> p;
-        
-    public:
-        template<typename ...Args>
-        Parameter(const double &a_, Args... args) : a(a_), p(args...)
-        {};
-        
-        template<unsigned int na, typename ...Args>
-        static inline double eval(const Parameter<na> &p, Args... args)
-        {
-            return Parameter<n-1>::eval(p.p);
-        };
-        
-        template<unsigned int na, typename ...Args>
-        static std::string write(const Parameter<na> &p, Args... args)
-        {
-            return Parameter<n-1>::write(p.p);
-        }
-};
-
-template<>
-class Parameter<1>
-{
-    public:
-        double a;
-        
-    public:
-        Parameter(const double &a_) : a(a_)
-        {};
-
-        template<unsigned int na, typename ...Args>
-        static inline double eval(const Parameter<na> &p, Args... args)
-        {
-            return p.a;
-        };
-        
-        
-        template<unsigned int na,typename ...Args>
-        static std::string write(const Parameter<na> &p, Args... args)
-        {
-            return std::to_string(p.a);
-        }
-};
-
-Parameter<1> param(const double &x)
-{
-    return Parameter<1>(x);
-}
-
-template<unsigned int n, typename ...Args>
-Parameter<n> param(const double &x, Args... args)
-{
-    return Parameter<n>(x,Parameter<n-1>(args...));
-}
-
-template<unsigned int n>
-class Argument
-{
-    public:
-        template<unsigned int na, typename ...Args>
-        static inline double eval(const Parameter<na> &p, Args... args)
-        {
-            return Argument<n>::eval(args...);
-        };
-        template<typename ...Args>
-        static inline double eval(const double &x, Args... args)
-        {
-            return Argument<n-1>::eval(args...);
-        };
-        template<typename ...Args>
-        static std::string write(Args... args)
-        {
-            return "x" + std::to_string(n);
-        }
-};
-
-template<>
-class Argument<0>
-{
-    public:
-        template<unsigned int na, typename ...Args>
-        static inline double eval(const Parameter<na> &p, Args... args)
-        {
-            return Argument<0>::eval(args...);
-        };
-        template<typename ...Args>
-        static inline double eval(const double &x, Args... args)
-        {
-            return x;
-        };
-        template<typename ...Args>
-        static std::string write(Args... args)
-        {
-            return "x0";
-        }
-};
+#include <type_traits>
 
 template<typename O1, typename O2>
 class Plus
@@ -203,11 +78,40 @@ struct Der<Mult<O1,O2>, A>
     using der = Plus< Mult<typename Der<O1,A>::der,O2>, Mult<O1,typename Der<O2,A>::der> >;
 };
 
-
 template<typename EXPR>
-struct Factorize {};
+struct Factorize
+{
+    using fac = EXPR;
+};
 
-template<typename O1, typename O2>
+template<typename O1, typename O2, typename O3, typename O4>
+struct Factorize<Plus<Mult<O1,O2>,Mult<O3,O4> > >
+{
+    using fac =
+        typename std::conditional
+        <
+            std::is_same<O1,O3>::value,
+            Mult<O1,Plus<O2,O4> >,
+            typename std::conditional
+            <
+                std::is_same<O1,O4>::value,
+                Mult<O1,Plus<O2,O3> >,
+                typename std::conditional
+                <
+                    std::is_same<O2,O3>::value,
+                    Mult<O2,Plus<O1,O4> >,
+                    typename std::conditional
+                    <
+                        std::is_same<O2,O4>::value,
+                        Mult<O2,Plus<O1,O3> >,
+                        Plus<Mult<O1,O2>, Mult<O3,O4> >
+                    >::type
+                >::type
+            >::type
+        >::type;
+};
+
+/*template<typename O1, typename O2>
 struct Factorize<Plus<Mult<O1,O2>,Mult<O1,O2> > >
 {
     using fac = Mult<O1,Plus<O2,O2> >;
@@ -241,6 +145,6 @@ template<typename O1, typename O2, typename O3>
 struct Factorize<Plus<Mult<O2,O1>,Mult<O3,O1> > >
 {
     using fac = Mult<O1,Plus<O2,O3> >;
-};
+};*/
 
 #endif//_APPLICATION_H_

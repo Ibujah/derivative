@@ -1,18 +1,13 @@
 #include <iostream>
 #include "Application.hpp"
 
-using X = Argument<0>;
-using Y = Argument<1>;
-using Z = Argument<2>;
-using A1 = Parameter<1>;
-using A2 = Parameter<2>;
-using A3 = Parameter<3>;
 using F = Plus<X,Y>;
 using G = Plus<X,X>;
 using H = Mult<X,X>;
 using dFdX = Der<F,X>::der;
 using dGdX = Der<G,X>::der;
-using dHdX = Factorize<Der<H,X>::der>::fac;
+using dHdX = Der<H,X>::der;
+using FacdHdX = Factorize<Der<H,X>::der>::fac;
 using ddGddX = Der<dGdX,X>::der;
 using ddHddX = Der<dHdX,X>::der;
 using F1 = Plus<A1,A2>;
@@ -40,6 +35,8 @@ int main()
     // std::cout << Y::eval(0) << std::endl; // error
     
     std::cout << F1::write(param<2>(4.0,2.0)) << " " << F1::eval(param<2>(4.0,2.0)) << std::endl;
+
+    std::cout << dHdX::write() << " " << FacdHdX::write() << std::endl;
 
     return 0;
 }
