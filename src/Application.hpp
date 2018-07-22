@@ -203,4 +203,44 @@ struct Der<Mult<O1,O2>, A>
     using der = Plus< Mult<typename Der<O1,A>::der,O2>, Mult<O1,typename Der<O2,A>::der> >;
 };
 
+
+template<typename EXPR>
+struct Factorize {};
+
+template<typename O1, typename O2>
+struct Factorize<Plus<Mult<O1,O2>,Mult<O1,O2> > >
+{
+    using fac = Mult<O1,Plus<O2,O2> >;
+};
+
+template<typename O1, typename O2>
+struct Factorize<Plus<Mult<O1,O2>,Mult<O2,O1> > >
+{
+    using fac = Mult<O1,Plus<O2,O2> >;
+};
+
+template<typename O1, typename O2, typename O3>
+struct Factorize<Plus<Mult<O1,O2>,Mult<O1,O3> > >
+{
+    using fac = Mult<O1,Plus<O2,O3> >;
+};
+
+template<typename O1, typename O2, typename O3>
+struct Factorize<Plus<Mult<O1,O2>,Mult<O3,O1> > >
+{
+    using fac = Mult<O1,Plus<O2,O3> >;
+};
+
+template<typename O1, typename O2, typename O3>
+struct Factorize<Plus<Mult<O2,O1>,Mult<O1,O3> > >
+{
+    using fac = Mult<O1,Plus<O2,O3> >;
+};
+
+template<typename O1, typename O2, typename O3>
+struct Factorize<Plus<Mult<O2,O1>,Mult<O3,O1> > >
+{
+    using fac = Mult<O1,Plus<O2,O3> >;
+};
+
 #endif//_APPLICATION_H_
