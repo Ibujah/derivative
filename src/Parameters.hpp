@@ -1,6 +1,9 @@
 #ifndef _PARAMETERS_H_
 #define _PARAMETERS_H_
 
+#include "Derivative.hpp"
+#include "Arguments.hpp"
+
 template<unsigned int n>
 class Parameter
 {
@@ -68,5 +71,11 @@ Parameter<n> param(const double &x, Args... args)
 using A1 = Parameter<1>;
 using A2 = Parameter<2>;
 using A3 = Parameter<3>;
+
+template<unsigned int n, typename A>
+struct Der<Parameter<n>,A>
+{
+    using der = Zero;
+};
 
 #endif //_PARAMETERS_H_

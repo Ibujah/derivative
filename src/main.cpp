@@ -11,6 +11,8 @@ using FacdHdX = Factorize<Der<H,X>::der>::fac;
 using ddGddX = Der<dGdX,X>::der;
 using ddHddX = Der<dHdX,X>::der;
 using F1 = Plus<A1,A2>;
+using F2 = Plus<Mult<A1,A1>,A2,X>;
+using dF2 = Der<F2,X>::der;
 
 int main()
 {
@@ -38,5 +40,7 @@ int main()
 
     std::cout << dHdX::write() << " " << FacdHdX::write() << std::endl;
 
+    std::cout << F2::write(param<2>(4.0,2.0),x) << " " << F2::eval(param<2>(4.0,2.0),x) << std::endl;
+    std::cout << dF2::write(param<2>(4.0,2.0),x) << " " << dF2::eval(param<2>(4.0,2.0),x) << std::endl;
     return 0;
 }

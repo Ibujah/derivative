@@ -1,6 +1,9 @@
 #ifndef _ARGUMENTS_H_
 #define _ARGUMENTS_H_
 
+#include "Derivative.hpp"
+#include "Integers.hpp"
+
 template<unsigned int n>
 class Argument
 {
@@ -43,6 +46,17 @@ class Argument<0>
         }
 };
 
+template<unsigned int n>
+struct Der<Argument<n>,Argument<n> >
+{
+    using der = One;
+};
+
+template<unsigned int n, unsigned int nA>
+struct Der<Argument<n>,Argument<nA> >
+{
+    using der = Zero;
+};
 
 using X = Argument<0>;
 using Y = Argument<1>;
