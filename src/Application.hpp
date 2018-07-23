@@ -5,30 +5,9 @@
 #include "Parameters.hpp"
 #include "Arguments.hpp"
 #include "Plus.hpp"
+#include "Mult.hpp"
 
 #include <type_traits>
-
-template<typename O1, typename O2>
-class Mult
-{
-    public:
-        template<typename ...Args>
-        static inline double eval(Args... args)
-        {
-            return O1::eval(args...)*O2::eval(args...);
-        };
-        template<typename ...Args>
-        static std::string write(Args... args)
-        {
-            return O1::write(args...) + "." + O2::write(args...);
-        }
-};
-
-template<typename O1, typename O2, typename A>
-struct Der<Mult<O1,O2>, A>
-{
-    using der = Plus< Mult<typename Der<O1,A>::der,O2>, Mult<O1,typename Der<O2,A>::der> >;
-};
 
 template<typename EXPR>
 struct Factorize
