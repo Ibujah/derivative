@@ -6,19 +6,20 @@
 #include "Arguments.hpp"
 #include "Plus.hpp"
 #include "Mult.hpp"
+#include "Simplify.hpp"
 
 #include <type_traits>
 
 template<typename EXPR>
 struct Factorize
 {
-    using fac = EXPR;
+    using value = EXPR;
 };
 
 template<typename O1, typename O2, typename O3, typename O4>
 struct Factorize<Plus<Mult<O1,O2>,Mult<O3,O4> > >
 {
-    using fac =
+    using value =
         typename std::conditional
         <
             std::is_same<O1,O3>::value,

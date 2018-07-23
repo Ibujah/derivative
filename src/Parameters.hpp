@@ -75,7 +75,7 @@ using A3 = Parameter<3>;
 template<unsigned int n, typename A>
 struct Der<Parameter<n>,A>
 {
-    using der = Zero;
+    using value = Zero;
 };
 
 #endif //_PARAMETERS_H_

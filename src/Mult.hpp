@@ -36,17 +36,18 @@ class Mult<O1,O2,O3,Ops...>
         }
 };
 
+
 template<typename O1, typename O2, typename A, typename... Ops>
 struct Der<Mult<O1,O2,Ops...>, A>
 {
-    using der = Plus< Mult<typename Der<O1,A>::der,O2>, Mult<O1,typename Der<O2,A>::der> >;
+    using value = Plus< Mult<typename Der<O1,A>::value,O2>, Mult<O1,typename Der<O2,A>::value> >;
 };
 
 template<typename O1, typename O2, typename O3, typename A, typename... Ops>
 struct Der<Mult<O1,O2,O3,Ops...>, A>
 {
-    using der = Plus< Mult<typename Der<O1,A>::der,O2,O3,Ops...>,
-					  Mult<O1,typename Der<Mult<O2,O3,Ops...>,A>::der> >;
+    using value = Plus< Mult<typename Der<O1,A>::value,O2,O3,Ops...>,
+						Mult<O1,typename Der<Mult<O2,O3,Ops...>,A>::value> >;
 };
 
 #endif //_MULT_H_

@@ -38,13 +38,13 @@ class Plus<O1,O2,O3,Ops...>
 template<typename O1, typename O2, typename A, typename... Ops>
 struct Der<Plus<O1,O2,Ops...>, A>
 {
-    using der = Plus<typename Der<O1,A>::der,typename Der<O2,A>::der>;
+    using value = Plus<typename Der<O1,A>::value,typename Der<O2,A>::value>;
 };
 
 template<typename O1, typename O2, typename O3, typename A, typename... Ops>
 struct Der<Plus<O1,O2,O3,Ops...>, A>
 {
-    using der = Plus<typename Der<O1,A>::der,typename Der<Plus<O2,O3,Ops...>,A>::der>;
+    using value = Plus<typename Der<O1,A>::value,typename Der<Plus<O2,O3,Ops...>,A>::value>;
 };
 
 #endif //_PLUS_H_
