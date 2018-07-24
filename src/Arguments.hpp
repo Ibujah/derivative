@@ -49,13 +49,13 @@ class Argument<0>
 template<unsigned int n>
 struct Der<Argument<n>,Argument<n> >
 {
-    using value = One;
+    using type = One;
 };
 
 template<unsigned int n, unsigned int nA>
 struct Der<Argument<n>,Argument<nA> >
 {
-    using value = Zero;
+    using type = Zero;
 };
 
 using X = Argument<0>;

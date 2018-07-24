@@ -40,14 +40,14 @@ class Mult<O1,O2,O3,Ops...>
 template<typename O1, typename O2, typename A, typename... Ops>
 struct Der<Mult<O1,O2,Ops...>, A>
 {
-    using value = Plus< Mult<typename Der<O1,A>::value,O2>, Mult<O1,typename Der<O2,A>::value> >;
+    using type = Plus< Mult<typename Der<O1,A>::type,O2>, Mult<O1,typename Der<O2,A>::type> >;
 };
 
 template<typename O1, typename O2, typename O3, typename A, typename... Ops>
 struct Der<Mult<O1,O2,O3,Ops...>, A>
 {
-    using value = Plus< Mult<typename Der<O1,A>::value,O2,O3,Ops...>,
-						Mult<O1,typename Der<Mult<O2,O3,Ops...>,A>::value> >;
+    using type = Plus< Mult<typename Der<O1,A>::type,O2,O3,Ops...>,
+						Mult<O1,typename Der<Mult<O2,O3,Ops...>,A>::type> >;
 };
 
 #endif //_MULT_H_

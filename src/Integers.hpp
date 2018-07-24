@@ -22,7 +22,7 @@ class Integer
 template<unsigned int n,typename A>
 struct Der<Integer<n>,A>
 {
-    using value = Integer<0>;
+    using type = Integer<0>;
 };
 
 using Zero = Integer<0>;
