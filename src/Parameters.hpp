@@ -3,6 +3,7 @@
 
 #include "Derivative.hpp"
 #include "Arguments.hpp"
+#include <sstream>
 
 template<unsigned int n>
 class Parameter
@@ -53,7 +54,11 @@ class Parameter<1>
         template<unsigned int na,typename ...Args>
         static std::string write(const Parameter<na> &p, Args... args)
         {
-            return std::to_string(p.a);
+			std::stringstream ss;
+			ss.precision(2);
+			ss.setf(std::ios::fixed, std:: ios::floatfield);
+			ss << p.a;
+            return ss.str();
         }
 };
 

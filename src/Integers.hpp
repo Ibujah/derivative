@@ -10,7 +10,7 @@ class Integer
         template<typename ...Args>
         static inline double eval(Args... args)
         {
-            return n;
+            return (double)n;
         };
         template<typename ...Args>
         static std::string write(Args... args)

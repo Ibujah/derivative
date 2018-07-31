@@ -13,6 +13,7 @@ struct Order {
 	using higher = O2;
 };
 
+// Integer
 template<unsigned int n, typename O>
 struct Order<O,Integer<n> > {
 	static const bool value = std::false_type::value;
@@ -20,19 +21,30 @@ struct Order<O,Integer<n> > {
 	using higher = O;
 };
 
-template<unsigned int n, typename O>
-struct Order<O,Argument<n> > {
-	static const bool value = std::false_type::value;
+template<unsigned int n, unsigned int na>
+struct Order<Integer<n>,Argument<na> > {
+	static const bool value = std::true_type::value;
 	using lower = Integer<n>;
-	using higher = O;
+	using higher = Argument<na>;
 };
 
+
+// arguments
 template<unsigned int n1, unsigned int n2>
 struct Order<Argument<n1>,Argument<n2> > {
 	static const bool value = n1 <= n2;
 	using lower  = Argument<n1<=n2?n1:n2>;
 	using higher = Argument<n1<=n2?n2:n1>;
 };
+
+template<unsigned int n, typename O>
+struct Order<O,Argument<n> > {
+	static const bool value = std::false_type::value;
+	using lower = Argument<n>;
+	using higher = O;
+};
+
+
 
 /*template<unsigned int n1, unsigned int n2>
 struct Order<Integer<n1>, Integer<n2> > {

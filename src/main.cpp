@@ -15,13 +15,14 @@ using F2 = Plus<Mult<A1,A1>,A2,X>;
 using dF2 = Der<F2,X>::type;
 using F3 = Plus<One,One,One,X>;
 using F4 = Plus<X,One,One,One>;
-using F5 = Plus<X,One,Y,One,One>;
+using F5 = Plus<Mult<One,One>,Y,One,X,One,One>;
 using F6 = Plus<X,One>::append<One>::type;
 using F7 = Plus<X,Zero,Zero,Zero>::append<Plus<Plus<One, Plus<One > > > >::type;
 
 int main()
 {
     std::cout << "Hello world!" << std::endl;
+	std::cout.precision(2);
     
     double x = 1;
     double y = 2;

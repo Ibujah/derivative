@@ -4,50 +4,64 @@
 #include "Derivative.hpp"
 #include "Plus.hpp"
 
-template<typename O1, typename O2, typename... Ops>
+template<typename O1, typename... Ops>
 class Mult
 {
+	protected:
+        template<typename ...Args>
+        static std::string write_int(Args... args)
+        {
+            return O1::write(args...);
+        };
+
     public:
         template<typename ...Args>
         static inline double eval(Args... args)
         {
-            return O1::eval(args...)*O2::eval(args...);
+            return O1::eval(args...);
         };
         template<typename ...Args>
         static std::string write(Args... args)
         {
-            return O1::write(args...) + "." + O2::write(args...);
+            return O1::write(args...);
         }
 };
 
-template<typename O1, typename O2, typename O3, typename... Ops>
-class Mult<O1,O2,O3,Ops...>
+template<typename O1, typename O2, typename... Ops>
+class Mult<O1,O2,Ops...> : public Mult<O2,Ops...>
 {
+	protected:
+        template<typename ...Args>
+        static std::string write_int(Args... args)
+        {
+            return O1::write(args...) + "+" + Mult<O2,Ops...>::write_int(args...);
+        };
+
     public:
         template<typename ...Args>
         static inline double eval(Args... args)
         {
-            return O1::eval(args...)*Mult<O2,O3,Ops...>::eval(args...);
+            return O1::eval(args...)*Mult<O2,Ops...>::eval(args...);
         };
         template<typename ...Args>
         static std::string write(Args... args)
         {
-            return O1::write(args...) + "." + Mult<O2,O3,Ops...>::write(args...);
+            return "(" + O1::write(args...) + "*" + Mult<O2,Ops...>::write_int(args...) + ")";
         }
 };
 
+
+template<typename O1, typename A, typename... Ops>
+struct Der<Mult<O1,Ops...>, A>
+{
+    using type = typename Der<O1,A>::type;
+};
 
 template<typename O1, typename O2, typename A, typename... Ops>
 struct Der<Mult<O1,O2,Ops...>, A>
 {
-    using type = Plus< Mult<typename Der<O1,A>::type,O2>, Mult<O1,typename Der<O2,A>::type> >;
-};
-
-template<typename O1, typename O2, typename O3, typename A, typename... Ops>
-struct Der<Mult<O1,O2,O3,Ops...>, A>
-{
-    using type = Plus< Mult<typename Der<O1,A>::type,O2,O3,Ops...>,
-						Mult<O1,typename Der<Mult<O2,O3,Ops...>,A>::type> >;
+    using type = Plus< Mult<typename Der<O1,A>::type,O2,Ops...>,
+						Mult<O1,typename Der<Mult<O2,Ops...>,A>::type> >;
 };
 
 #endif //_MULT_H_

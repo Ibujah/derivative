@@ -6,6 +6,13 @@
 template<typename O1, typename... Ops>
 class Plus
 {
+	protected:
+        template<typename ...Args>
+        static std::string write_int(Args... args)
+        {
+            return O1::write(args...);
+        };
+
     public:
         template<typename ...Args>
         static inline double eval(Args... args)
@@ -32,8 +39,15 @@ class Plus
 };
 
 template<typename O1, typename O2, typename... Ops>
-class Plus<O1,O2,Ops...>
+class Plus<O1,O2,Ops...> : public Plus<O2,Ops...>
 {
+	protected:
+        template<typename ...Args>
+        static std::string write_int(Args... args)
+        {
+            return O1::write(args...) + "+" + Plus<O2,Ops...>::write_int(args...);
+        };
+
     public:
         template<typename ...Args>
         static inline double eval(Args... args)
@@ -43,7 +57,7 @@ class Plus<O1,O2,Ops...>
         template<typename ...Args>
         static std::string write(Args... args)
         {
-            return "(" + O1::write(args...) + "+" + Plus<O2,Ops...>::write(args...) + ")";
+            return "(" + O1::write(args...) + "+" + Plus<O2,Ops...>::write_int(args...) + ")";
         };
 		
 		template<typename O>
