@@ -44,8 +44,6 @@ struct Order<Integer<n>, O> {
 	using value = std::true_type;
 };*/
 
-class Empty{};
-
 template<typename O1, typename O2>
 struct Separate
 {};
@@ -55,12 +53,12 @@ struct Separate<O1,Plus<O2,Args...> >
 {
 	using inf = typename std::conditional
 				<Order<O1,O2>::value,
-				Empty,
+				void,
 				Plus<O2> >::type;
 	using sup = typename std::conditional
 				<Order<O1,O2>::value,
 				Plus<O2>,
-				Empty>::type;
+				void>::type;
 };
 
 template<typename O1, typename O2, typename O3, typename... Args>
@@ -68,13 +66,21 @@ struct Separate<O1,Plus<O2,O3,Args...> >
 {
 	using infnext = typename Separate<O1,Plus<O3,Args...> >::inf;
 	using supnext = typename Separate<O1,Plus<O3,Args...> >::sup;
+	
 	using inf = typename std::conditional
 				<Order<O1,O2>::value,
 				infnext,
-				Plus<O2,infnext> >::type;
+				typename std::conditional
+					<std::is_same<infnext,void>::value,
+					Plus<O2>,
+					typename Plus<O2>::template append<infnext>::type >::type >::type;
+
 	using sup = typename std::conditional
 				<Order<O1,O2>::value,
-				Plus<O2,supnext>,
+				typename std::conditional
+					<std::is_same<supnext,void>::value,
+					Plus<O2>,
+					typename Plus<O2>::template append<supnext>::type >::type,
 				supnext>::type;
 };
 
@@ -96,18 +102,17 @@ struct Sort<Plus<O1,O2,Args...> >
 	using pivot = O1;
 	using inf = typename Sort<typename Separate<O1,Plus<O2,Args...> >::inf>::type;
 	using sup = typename Sort<typename Separate<O1,Plus<O2,Args...> >::sup>::type;
-	
+
 	using inter = typename std::conditional
-					<std::is_same<inf,Empty>::value,
+					<std::is_same<sup,void>::value,
 					Plus<pivot>,
-					Plus<inf,pivot> >::type;
+					typename Plus<pivot>::template append<sup>::type >::type;
+	
 	using type  = typename std::conditional
-					<std::is_same<sup,Empty>::value,
+					<std::is_same<inf,void>::value,
 					inter,
-					Plus<inter,sup> >::type;
+					typename inf::template append<inter>::type >::type;
 };
-
-
 
 template<typename F>
 struct Simp {

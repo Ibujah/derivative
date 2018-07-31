@@ -16,7 +16,19 @@ class Plus
         static std::string write(Args... args)
         {
             return O1::write(args...);
-        }
+        };
+		
+		template<typename O>
+		struct append
+		{
+			using type = Plus<O1,Ops...,O>;
+		};
+	
+		template<typename... O>
+		struct append<Plus<O...> >
+		{
+			using type = Plus<O1,Ops...,O...>;
+		};
 };
 
 template<typename O1, typename O2, typename... Ops>
@@ -32,7 +44,19 @@ class Plus<O1,O2,Ops...>
         static std::string write(Args... args)
         {
             return "(" + O1::write(args...) + "+" + Plus<O2,Ops...>::write(args...) + ")";
-        }
+        };
+		
+		template<typename O>
+		struct append
+		{
+			using type = Plus<O1,O2,Ops...,O>;
+		};
+	
+		template<typename... O>
+		struct append<Plus<O...> >
+		{
+			using type = Plus<O1,O2,Ops...,O...>;
+		};
 };
 
 template<typename O1, typename A, typename... Ops>
