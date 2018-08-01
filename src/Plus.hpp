@@ -36,6 +36,18 @@ class Plus
 		{
 			using type = Plus<O1,Ops...,O...>;
 		};
+		
+		template<typename O>
+		struct rev_append
+		{
+			using type = Plus<O,O1,Ops...>;
+		};
+	
+		template<typename... O>
+		struct rev_append<Plus<O...> >
+		{
+			using type = Plus<O...,O1,Ops...>;
+		};
 };
 
 template<typename O1, typename O2, typename... Ops>
@@ -70,6 +82,18 @@ class Plus<O1,O2,Ops...> : public Plus<O2,Ops...>
 		struct append<Plus<O...> >
 		{
 			using type = Plus<O1,O2,Ops...,O...>;
+		};
+		
+		template<typename O>
+		struct rev_append
+		{
+			using type = Plus<O,O1,O2,Ops...>;
+		};
+	
+		template<typename... O>
+		struct rev_append<Plus<O...> >
+		{
+			using type = Plus<O...,O1,O2,Ops...>;
 		};
 };
 

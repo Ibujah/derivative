@@ -5,6 +5,44 @@
 #include "Plus.hpp"
 #include "Mult.hpp"
 
+
+template<typename O>
+struct RemPlus
+{
+	using type = O;
+};
+
+template<typename O1, typename... Ops>
+struct RemPlus<Plus<O1,Ops...> >
+{
+	using type = Plus<O1>;
+};
+
+template<typename O1, typename... Ops1, typename... Ops>
+struct RemPlus<Plus<Plus<O1,Ops1...>,Ops...> >
+{
+	using type = typename RemPlus<Plus<O1,Ops1...> >::type;
+};
+
+template<typename O1, typename O2, typename... Ops1, typename... Ops>
+struct RemPlus<Plus<Plus<O1,Ops1...>,O2,Ops...> >
+{
+	using next = typename RemPlus<Plus<O2,Ops...> >::type;
+	using type = typename RemPlus<Plus<O1,Ops1...> >::type::template append<next>::type;
+};
+
+template<typename O1, typename O2, typename... Ops>
+struct RemPlus<Plus<O1,O2,Ops...> >
+{
+	using next = typename RemPlus<Plus<O2,Ops...> >::type;
+	using type = typename Plus<O1>::template append<next>::type;
+};
+
+
+
+
+
+
 // defining order relations
 template<typename O1, typename O2> // inferior or equals
 struct Order {
@@ -45,16 +83,6 @@ struct Order<O,Argument<n> > {
 };
 
 
-
-/*template<unsigned int n1, unsigned int n2>
-struct Order<Integer<n1>, Integer<n2> > {
-	using value = std::true_type;
-};
-
-template<unsigned int n, typename O>
-struct Order<Integer<n>, O> {
-	using value = std::true_type;
-};*/
 
 template<typename O1, typename O2>
 struct Separate
@@ -97,6 +125,7 @@ struct Separate<O1,Plus<O2,O3,Args...> >
 };
 
 
+
 template<typename F>
 struct Sort {
 	using type = F;
@@ -123,8 +152,11 @@ struct Sort<Plus<O1,O2,Args...> >
 	using type  = typename std::conditional
 					<std::is_same<inf,void>::value,
 					inter,
-					typename inf::template append<inter>::type >::type;
+					typename inter::template rev_append<inf>::type >::type;
 };
+
+
+
 
 template<typename F>
 struct Simp {

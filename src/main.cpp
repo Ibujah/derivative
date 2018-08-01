@@ -19,6 +19,8 @@ using F5 = Plus<Mult<One,One>,Y,One,X,One,One>;
 using F6 = Plus<X,One>::append<One>::type;
 using F7 = Plus<X,Zero,Zero,Zero>::append<Plus<Plus<One, Plus<One > > > >::type;
 
+using F8 = Plus<One,Plus<Plus<F3,One,F4>,Zero,One,F3> >;
+
 int main()
 {
     std::cout << "Hello world!" << std::endl;
@@ -52,5 +54,6 @@ int main()
 	std::cout << F4::write() << " " << Sort<F4>::type::write() << " " << Simp<Sort<F4>::type >::type::write() << " " << F4::eval(x) << std::endl;
 	std::cout << F5::write() << " " << Sort<F5>::type::write() << " " << Simp<Sort<F5>::type >::type::write() << " " << F5::eval(x,y) << std::endl;
 	std::cout << F6::write() << " " << F7::write() << std::endl;
+	std::cout << F8::write() << " " << Simp<Sort<RemPlus<F8>::type>::type>::type::write() << std::endl;
     return 0;
 }
