@@ -1,5 +1,15 @@
 #include <iostream>
-#include "Application.hpp"
+
+#include "basic_operands/Integers.hpp"
+#include "basic_operands/Parameters.hpp"
+#include "basic_operands/Arguments.hpp"
+
+#include "basic_operations/Plus.hpp"
+#include "basic_operations/Mult.hpp"
+
+#include "simplification/Simplify.hpp"
+#include "simplification/Factorization.hpp"
+
 
 using F = Plus<X,Y>;
 using G = Plus<X,X>;

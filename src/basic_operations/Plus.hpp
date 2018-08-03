@@ -1,7 +1,7 @@
 #ifndef _PLUS_H_
 #define _PLUS_H_
 
-#include "Derivative.hpp"
+#include "../differential/Derivative.hpp"
 
 template<typename O1, typename... Ops>
 class Plus

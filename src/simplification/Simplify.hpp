@@ -1,9 +1,9 @@
 #ifndef _SIMPLIFY_H_
 #define _SIMPLIFY_H_
 
-#include "Integers.hpp"
-#include "Plus.hpp"
-#include "Mult.hpp"
+#include "../basic_operands/Integers.hpp"
+#include "../basic_operations/Plus.hpp"
+#include "../basic_operations/Mult.hpp"
 
 
 template<typename O>

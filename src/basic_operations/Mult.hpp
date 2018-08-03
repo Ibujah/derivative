@@ -1,7 +1,7 @@
 #ifndef _MULT_H_
 #define _MULT_H_
 
-#include "Derivative.hpp"
+#include "../differential/Derivative.hpp"
 #include "Plus.hpp"
 
 template<typename O1, typename... Ops>

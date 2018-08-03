@@ -1,7 +1,7 @@
 #ifndef _INTEGERS_H_
 #define _INTEGERS_H_
 
-#include "Derivative.hpp"
+#include "../differential/Derivative.hpp"
 
 template<unsigned int n>
 class Integer

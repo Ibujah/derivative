@@ -1,13 +1,8 @@
-#ifndef _APPLICATION_H_
-#define _APPLICATION_H_
+#ifndef _FACTORIZATION_H_
+#define _FACTORIZATION_H_
 
-#include "Integers.hpp"
-#include "Parameters.hpp"
-#include "Arguments.hpp"
-#include "Plus.hpp"
-#include "Mult.hpp"
-#include "Simplify.hpp"
-
+#include "../basic_operations/Plus.hpp"
+#include "../basic_operations/Mult.hpp"
 #include <type_traits>
 
 template<typename EXPR>
@@ -79,4 +74,4 @@ struct Factorize<Plus<Mult<O2,O1>,Mult<O3,O1> > >
     using fac = Mult<O1,Plus<O2,O3> >;
 };*/
 
-#endif//_APPLICATION_H_
+#endif//_FACTORIZATION_H_
