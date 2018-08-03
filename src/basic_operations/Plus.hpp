@@ -2,99 +2,25 @@
 #define _PLUS_H_
 
 #include "../differential/Derivative.hpp"
+#include "../basic_operands/Integers.hpp"
+#include "List_Op_Comm.hpp"
 
-template<typename O1, typename... Ops>
-class Plus
+class OpPlus
 {
-	protected:
-        template<typename ...Args>
-        static std::string write_int(Args... args)
-        {
-            return O1::write(args...);
-        };
-
-    public:
-        template<typename ...Args>
-        static inline double eval(Args... args)
-        {
-            return O1::eval(args...);
-        };
-        template<typename ...Args>
-        static std::string write(Args... args)
-        {
-            return O1::write(args...);
-        };
-		
-		template<typename O>
-		struct append
+	public:
+		static inline double operation(double arg1, double arg2)
 		{
-			using type = Plus<O1,Ops...,O>;
-		};
-	
-		template<typename... O>
-		struct append<Plus<O...> >
-		{
-			using type = Plus<O1,Ops...,O...>;
-		};
-		
-		template<typename O>
-		struct rev_append
-		{
-			using type = Plus<O,O1,Ops...>;
-		};
-	
-		template<typename... O>
-		struct rev_append<Plus<O...> >
-		{
-			using type = Plus<O...,O1,Ops...>;
+			return arg1 + arg2;	
 		};
 };
 
-template<typename O1, typename O2, typename... Ops>
-class Plus<O1,O2,Ops...> : public Plus<O2,Ops...>
-{
-	protected:
-        template<typename ...Args>
-        static std::string write_int(Args... args)
-        {
-            return O1::write(args...) + "+" + Plus<O2,Ops...>::write_int(args...);
-        };
+template<typename O1, typename... Ops>
+using Plus = List_Op_Comm<OpPlus,'+',O1,Ops...>;
 
-    public:
-        template<typename ...Args>
-        static inline double eval(Args... args)
-        {
-            return O1::eval(args...)+Plus<O2,Ops...>::eval(args...);
-        };
-        template<typename ...Args>
-        static std::string write(Args... args)
-        {
-            return "(" + O1::write(args...) + "+" + Plus<O2,Ops...>::write_int(args...) + ")";
-        };
-		
-		template<typename O>
-		struct append
-		{
-			using type = Plus<O1,O2,Ops...,O>;
-		};
-	
-		template<typename... O>
-		struct append<Plus<O...> >
-		{
-			using type = Plus<O1,O2,Ops...,O...>;
-		};
-		
-		template<typename O>
-		struct rev_append
-		{
-			using type = Plus<O,O1,O2,Ops...>;
-		};
-	
-		template<typename... O>
-		struct rev_append<Plus<O...> >
-		{
-			using type = Plus<O...,O1,O2,Ops...>;
-		};
+template<>
+struct Neutral<OpPlus>
+{
+	using type = Zero;
 };
 
 template<typename O1, typename A, typename... Ops>
