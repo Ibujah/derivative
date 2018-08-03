@@ -3,8 +3,6 @@
 
 #include "../basic_operands/Integers.hpp"
 #include "../basic_operations/List_Op_Comm.hpp"
-#include "../basic_operations/Plus.hpp"
-#include "../basic_operations/Mult.hpp"
 
 
 template<typename O>
@@ -30,6 +28,13 @@ struct RemOp<List_Op_Comm<OpCom,symb,List_Op_Comm<OpCom,symb,O1,Ops1...>,O2,Ops.
 {
 	using next = typename RemOp<List_Op_Comm<OpCom,symb,O2,Ops...> >::type;
 	using type = typename RemOp<List_Op_Comm<OpCom,symb,O1,Ops1...> >::type::template append<next>::type;
+};
+
+template<typename OpCom1, char symb1, typename OpCom2, char symb2, typename O1, typename O2, typename... Ops1, typename... Ops>
+struct RemOp<List_Op_Comm<OpCom1,symb1,List_Op_Comm<OpCom2,symb2,O1,Ops1...>,O2,Ops...> >
+{
+	using next = typename RemOp<List_Op_Comm<OpCom1,symb1,O2,Ops...> >::type;
+	using type = typename List_Op_Comm<OpCom1,symb1,typename RemOp<List_Op_Comm<OpCom2,symb2,O1,Ops1...> >::type>::template append<next>::type;
 };
 
 template<typename OpCom, char symb, typename O1, typename O2, typename... Ops>
@@ -135,13 +140,13 @@ struct Sort {
 template<typename OpCom, char symb, typename O>
 struct Sort<List_Op_Comm<OpCom,symb,O> >
 {
-	using type = List_Op_Comm<OpCom,symb,O>;
+	using type = List_Op_Comm<OpCom,symb,typename Sort<O>::type>;
 };
 
 template<typename OpCom, char symb, typename O1, typename O2, typename... Args>
 struct Sort<List_Op_Comm<OpCom,symb,O1,O2,Args...> >
 {
-	using pivot = O1;
+	using pivot = typename Sort<O1>::type;
 	using inf = typename Sort<typename Separate<O1,List_Op_Comm<OpCom,symb,O2,Args...> >::inf>::type;
 	using sup = typename Sort<typename Separate<O1,List_Op_Comm<OpCom,symb,O2,Args...> >::sup>::type;
 
