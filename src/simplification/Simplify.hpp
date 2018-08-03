@@ -181,6 +181,24 @@ struct Simp<List_Op_Comm<OpCom,symb,Integer<n1>,Integer<n2>,O,Args...> >
 	using type = typename Simp<List_Op_Comm<OpCom,symb,typename OpCom::template OpInt<n1,n2>,O,Args...> >::type;
 };
 
+template<typename OpCom, char symb, unsigned int n, typename O, typename... Args>
+struct Simp<List_Op_Comm<OpCom,symb,Integer<n>,O,Args...> >
+{
+	using type = typename List_Op_Comm<OpCom,symb,Integer<n> >::template append<typename Simp<List_Op_Comm<OpCom,symb,O,Args...> >::type >::type;
+};
+
+template<typename OpCom, char symb, typename O, typename... Args>
+struct Simp<List_Op_Comm<OpCom,symb,O,Args...> >
+{
+	using type = List_Op_Comm<OpCom,symb,typename Simp<O>::type>;
+};
+
+template<typename OpCom, char symb, typename O1, typename O2, typename... Args>
+struct Simp<List_Op_Comm<OpCom,symb,O1,O2,Args...> >
+{
+	using type = typename List_Op_Comm<OpCom,symb,typename Simp<O1>::type>::template append<typename Simp<List_Op_Comm<OpCom,symb,O2,Args...> >::type >::type;
+};
+
 
 #endif //_SIMPLIFY_H_
 
