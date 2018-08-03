@@ -12,6 +12,9 @@ class OpPlus
 		{
 			return arg1 + arg2;	
 		};
+
+		template<unsigned int n1, unsigned int n2>
+		using OpInt = Integer<n1+n2>;
 };
 
 template<typename O1, typename... Ops>

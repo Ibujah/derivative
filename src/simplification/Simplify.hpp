@@ -2,40 +2,41 @@
 #define _SIMPLIFY_H_
 
 #include "../basic_operands/Integers.hpp"
+#include "../basic_operations/List_Op_Comm.hpp"
 #include "../basic_operations/Plus.hpp"
 #include "../basic_operations/Mult.hpp"
 
 
 template<typename O>
-struct RemPlus
+struct RemOp
 {
 	using type = O;
 };
 
-template<typename O1, typename... Ops>
-struct RemPlus<Plus<O1,Ops...> >
+template<typename OpCom, char symb, typename O1, typename... Ops>
+struct RemOp<List_Op_Comm<OpCom,symb,O1,Ops...> >
 {
-	using type = Plus<O1>;
+	using type = List_Op_Comm<OpCom,symb,O1>;
 };
 
-template<typename O1, typename... Ops1, typename... Ops>
-struct RemPlus<Plus<Plus<O1,Ops1...>,Ops...> >
+template<typename OpCom, char symb, typename O1, typename... Ops1, typename... Ops>
+struct RemOp<List_Op_Comm<OpCom,symb,List_Op_Comm<OpCom,symb,O1,Ops1...>,Ops...> >
 {
-	using type = typename RemPlus<Plus<O1,Ops1...> >::type;
+	using type = typename RemOp<List_Op_Comm<OpCom,symb,O1,Ops1...> >::type;
 };
 
-template<typename O1, typename O2, typename... Ops1, typename... Ops>
-struct RemPlus<Plus<Plus<O1,Ops1...>,O2,Ops...> >
+template<typename OpCom, char symb, typename O1, typename O2, typename... Ops1, typename... Ops>
+struct RemOp<List_Op_Comm<OpCom,symb,List_Op_Comm<OpCom,symb,O1,Ops1...>,O2,Ops...> >
 {
-	using next = typename RemPlus<Plus<O2,Ops...> >::type;
-	using type = typename RemPlus<Plus<O1,Ops1...> >::type::template append<next>::type;
+	using next = typename RemOp<List_Op_Comm<OpCom,symb,O2,Ops...> >::type;
+	using type = typename RemOp<List_Op_Comm<OpCom,symb,O1,Ops1...> >::type::template append<next>::type;
 };
 
-template<typename O1, typename O2, typename... Ops>
-struct RemPlus<Plus<O1,O2,Ops...> >
+template<typename OpCom, char symb, typename O1, typename O2, typename... Ops>
+struct RemOp<List_Op_Comm<OpCom,symb,O1,O2,Ops...> >
 {
-	using next = typename RemPlus<Plus<O2,Ops...> >::type;
-	using type = typename Plus<O1>::template append<next>::type;
+	using next = typename RemOp<List_Op_Comm<OpCom,symb,O2,Ops...> >::type;
+	using type = typename List_Op_Comm<OpCom,symb,O1>::template append<next>::type;
 };
 
 
@@ -88,39 +89,39 @@ template<typename O1, typename O2>
 struct Separate
 {};
 
-template<typename O1, typename O2, typename... Args>
-struct Separate<O1,Plus<O2,Args...> >
+template<typename OpCom, char symb, typename O1, typename O2, typename... Args>
+struct Separate<O1,List_Op_Comm<OpCom,symb,O2,Args...> >
 {
 	using inf = typename std::conditional
 				<Order<O1,O2>::value,
 				void,
-				Plus<O2> >::type;
+				List_Op_Comm<OpCom,symb,O2> >::type;
 	using sup = typename std::conditional
 				<Order<O1,O2>::value,
-				Plus<O2>,
+				List_Op_Comm<OpCom,symb,O2>,
 				void>::type;
 };
 
-template<typename O1, typename O2, typename O3, typename... Args>
-struct Separate<O1,Plus<O2,O3,Args...> >
+template<typename OpCom, char symb, typename O1, typename O2, typename O3, typename... Args>
+struct Separate<O1,List_Op_Comm<OpCom,symb,O2,O3,Args...> >
 {
-	using infnext = typename Separate<O1,Plus<O3,Args...> >::inf;
-	using supnext = typename Separate<O1,Plus<O3,Args...> >::sup;
+	using infnext = typename Separate<O1,List_Op_Comm<OpCom,symb,O3,Args...> >::inf;
+	using supnext = typename Separate<O1,List_Op_Comm<OpCom,symb,O3,Args...> >::sup;
 	
 	using inf = typename std::conditional
 				<Order<O1,O2>::value,
 				infnext,
 				typename std::conditional
 					<std::is_same<infnext,void>::value,
-					Plus<O2>,
-					typename Plus<O2>::template append<infnext>::type >::type >::type;
+					List_Op_Comm<OpCom,symb,O2>,
+					typename List_Op_Comm<OpCom,symb,O2>::template append<infnext>::type >::type >::type;
 
 	using sup = typename std::conditional
 				<Order<O1,O2>::value,
 				typename std::conditional
 					<std::is_same<supnext,void>::value,
-					Plus<O2>,
-					typename Plus<O2>::template append<supnext>::type >::type,
+					List_Op_Comm<OpCom,symb,O2>,
+					typename List_Op_Comm<OpCom,symb,O2>::template append<supnext>::type >::type,
 				supnext>::type;
 };
 
@@ -131,23 +132,23 @@ struct Sort {
 	using type = F;
 };
 
-template<typename O>
-struct Sort<Plus<O> >
+template<typename OpCom, char symb, typename O>
+struct Sort<List_Op_Comm<OpCom,symb,O> >
 {
-	using type = Plus<O>;
+	using type = List_Op_Comm<OpCom,symb,O>;
 };
 
-template<typename O1, typename O2, typename... Args>
-struct Sort<Plus<O1,O2,Args...> >
+template<typename OpCom, char symb, typename O1, typename O2, typename... Args>
+struct Sort<List_Op_Comm<OpCom,symb,O1,O2,Args...> >
 {
 	using pivot = O1;
-	using inf = typename Sort<typename Separate<O1,Plus<O2,Args...> >::inf>::type;
-	using sup = typename Sort<typename Separate<O1,Plus<O2,Args...> >::sup>::type;
+	using inf = typename Sort<typename Separate<O1,List_Op_Comm<OpCom,symb,O2,Args...> >::inf>::type;
+	using sup = typename Sort<typename Separate<O1,List_Op_Comm<OpCom,symb,O2,Args...> >::sup>::type;
 
 	using inter = typename std::conditional
 					<std::is_same<sup,void>::value,
-					Plus<pivot>,
-					typename Plus<pivot>::template append<sup>::type >::type;
+					List_Op_Comm<OpCom,symb,pivot>,
+					typename List_Op_Comm<OpCom,symb,pivot>::template append<sup>::type >::type;
 	
 	using type  = typename std::conditional
 					<std::is_same<inf,void>::value,
@@ -163,16 +164,16 @@ struct Simp {
 	using type = F;
 };
 
-template<unsigned int n1, unsigned int n2, typename... Args>
-struct Simp<Plus<Integer<n1>,Integer<n2>,Args...> >
+template<typename OpCom, char symb, unsigned int n1, unsigned int n2, typename... Args>
+struct Simp<List_Op_Comm<OpCom,symb,Integer<n1>,Integer<n2>,Args...> >
 {
-	using type = Integer<n1+n2>;
+	using type = typename OpCom::template OpInt<n1,n2>;
 };
 
-template<unsigned int n1, unsigned int n2, typename O, typename... Args>
-struct Simp<Plus<Integer<n1>,Integer<n2>,O,Args...> >
+template<typename OpCom, char symb, unsigned int n1, unsigned int n2, typename O, typename... Args>
+struct Simp<List_Op_Comm<OpCom,symb,Integer<n1>,Integer<n2>,O,Args...> >
 {
-	using type = typename Simp<Plus<Integer<n1+n2>,O,Args...> >::type;
+	using type = typename Simp<List_Op_Comm<OpCom,symb,typename OpCom::template OpInt<n1,n2>,O,Args...> >::type;
 };
 
 
