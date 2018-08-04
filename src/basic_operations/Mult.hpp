@@ -12,9 +12,35 @@ class OpMult
 		{
 			return arg1 * arg2;	
 		};
+		
+		
+		template<typename O1, typename O2>
+		struct OpInt
+		{};
 
 		template<unsigned int n1, unsigned int n2>
-		using OpInt = Integer<n1*n2>;
+		struct OpInt<Integer<n1>,Integer<n2> >
+		{
+			using type = Integer<n1*n2>;
+		};
+		
+		template<unsigned int n1, unsigned int n2>
+		struct OpInt<Integer<n1,false>,Integer<n2,false> >
+		{
+			using type = Integer<n1*n2>;
+		};
+		
+		template<unsigned int n1, unsigned int n2>
+		struct OpInt<Integer<n1,true>,Integer<n2,false> >
+		{
+			using type = Integer<n1*n2,false>;
+		};
+		
+		template<unsigned int n1, unsigned int n2>
+		struct OpInt<Integer<n1,false>,Integer<n2,true> >
+		{
+			using type = Integer<n1*n2,false>;
+		};
 };
 
 template<typename O1, typename... Ops>

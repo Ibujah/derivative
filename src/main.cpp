@@ -8,6 +8,8 @@
 #include "basic_operations/Mult.hpp"
 
 #include "simplification/Simplify.hpp"
+#include "simplification/RemoveOp.hpp"
+#include "simplification/Sort.hpp"
 #include "simplification/Factorization.hpp"
 
 
