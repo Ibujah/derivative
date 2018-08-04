@@ -60,10 +60,10 @@ int main()
 
     std::cout << F2::write(param<2>(4.0,2.0),x) << " " << F2::eval(param<2>(4.0,2.0),x) << std::endl;
     std::cout << dF2::write(param<2>(4.0,2.0),x) << " " << dF2::eval(param<2>(4.0,2.0),x) << std::endl;
-	std::cout << F3::write() << " " << Simp<F3>::type::write() << " " << F3::eval(x) << std::endl;
-	std::cout << F4::write() << " " << Sort<F4>::type::write() << " " << Simp<Sort<F4>::type >::type::write() << " " << F4::eval(x) << std::endl;
-	std::cout << F5::write() << " " << Sort<F5>::type::write() << " " << Simp<Sort<F5>::type >::type::write() << " " << F5::eval(x,y) << std::endl;
+	std::cout << F3::write() << " " << SimpRec<F3>::type::write() << " " << F3::eval(x) << std::endl;
+	std::cout << F4::write() << " " << SortRec<F4>::type::write() << " " << SimpRec<SortRec<F4>::type >::type::write() << " " << F4::eval(x) << std::endl;
+	std::cout << F5::write() << " " << SortRec<F5>::type::write() << " " << SimpRec<SortRec<F5>::type >::type::write() << " " << F5::eval(x,y) << std::endl;
 	std::cout << F6::write() << " " << F7::write() << std::endl;
-	std::cout << F8::write() << " " << Simp<Sort<RemOp<F8>::type>::type>::type::write() << std::endl;
+	std::cout << F8::write() << " " << SimpRec<SortRec<RemOpRec<F8>::type>::type>::type::write() << std::endl;
     return 0;
 }

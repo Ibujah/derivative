@@ -22,7 +22,13 @@ class Argument
         static std::string write(Args... args)
         {
             return "x" + std::to_string(n);
-        }
+        };
+		
+		template<template<typename T> typename F>
+		struct apply_rec
+		{
+			using type = typename F<Argument<n> >::type;
+		};
 };
 
 template<>
@@ -43,7 +49,13 @@ class Argument<0>
         static std::string write(Args... args)
         {
             return "x0";
-        }
+        };
+		
+		template<template<typename T> typename F>
+		struct apply_rec
+		{
+			using type = typename F<Argument<0> >::type;
+		};
 };
 
 template<unsigned int n>

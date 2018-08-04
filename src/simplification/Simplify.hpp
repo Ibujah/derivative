@@ -30,13 +30,6 @@ struct RemOp<List_Op_Comm<OpCom,symb,List_Op_Comm<OpCom,symb,O1,Ops1...>,O2,Ops.
 	using type = typename RemOp<List_Op_Comm<OpCom,symb,O1,Ops1...> >::type::template append<next>::type;
 };
 
-template<typename OpCom1, char symb1, typename OpCom2, char symb2, typename O1, typename O2, typename... Ops1, typename... Ops>
-struct RemOp<List_Op_Comm<OpCom1,symb1,List_Op_Comm<OpCom2,symb2,O1,Ops1...>,O2,Ops...> >
-{
-	using next = typename RemOp<List_Op_Comm<OpCom1,symb1,O2,Ops...> >::type;
-	using type = typename List_Op_Comm<OpCom1,symb1,typename RemOp<List_Op_Comm<OpCom2,symb2,O1,Ops1...> >::type>::template append<next>::type;
-};
-
 template<typename OpCom, char symb, typename O1, typename O2, typename... Ops>
 struct RemOp<List_Op_Comm<OpCom,symb,O1,O2,Ops...> >
 {
@@ -44,8 +37,11 @@ struct RemOp<List_Op_Comm<OpCom,symb,O1,O2,Ops...> >
 	using type = typename List_Op_Comm<OpCom,symb,O1>::template append<next>::type;
 };
 
-
-
+template<typename O>
+struct RemOpRec
+{
+	using type = typename RemOp<typename O::template apply_rec<RemOp>::type>::type;
+};
 
 
 
@@ -137,16 +133,10 @@ struct Sort {
 	using type = F;
 };
 
-template<typename OpCom, char symb, typename O>
-struct Sort<List_Op_Comm<OpCom,symb,O> >
-{
-	using type = List_Op_Comm<OpCom,symb,typename Sort<O>::type>;
-};
-
 template<typename OpCom, char symb, typename O1, typename O2, typename... Args>
 struct Sort<List_Op_Comm<OpCom,symb,O1,O2,Args...> >
 {
-	using pivot = typename Sort<O1>::type;
+	using pivot = O1;
 	using inf = typename Sort<typename Separate<O1,List_Op_Comm<OpCom,symb,O2,Args...> >::inf>::type;
 	using sup = typename Sort<typename Separate<O1,List_Op_Comm<OpCom,symb,O2,Args...> >::sup>::type;
 
@@ -161,6 +151,11 @@ struct Sort<List_Op_Comm<OpCom,symb,O1,O2,Args...> >
 					typename inter::template rev_append<inf>::type >::type;
 };
 
+template<typename O>
+struct SortRec
+{
+	using type = typename Sort<typename O::template apply_rec<Sort>::type>::type;
+};
 
 
 
@@ -169,8 +164,8 @@ struct Simp {
 	using type = F;
 };
 
-template<typename OpCom, char symb, unsigned int n1, unsigned int n2, typename... Args>
-struct Simp<List_Op_Comm<OpCom,symb,Integer<n1>,Integer<n2>,Args...> >
+template<typename OpCom, char symb, unsigned int n1, unsigned int n2>
+struct Simp<List_Op_Comm<OpCom,symb,Integer<n1>,Integer<n2> > >
 {
 	using type = typename OpCom::template OpInt<n1,n2>;
 };
@@ -181,22 +176,10 @@ struct Simp<List_Op_Comm<OpCom,symb,Integer<n1>,Integer<n2>,O,Args...> >
 	using type = typename Simp<List_Op_Comm<OpCom,symb,typename OpCom::template OpInt<n1,n2>,O,Args...> >::type;
 };
 
-template<typename OpCom, char symb, unsigned int n, typename O, typename... Args>
-struct Simp<List_Op_Comm<OpCom,symb,Integer<n>,O,Args...> >
+template<typename O>
+struct SimpRec
 {
-	using type = typename List_Op_Comm<OpCom,symb,Integer<n> >::template append<typename Simp<List_Op_Comm<OpCom,symb,O,Args...> >::type >::type;
-};
-
-template<typename OpCom, char symb, typename O, typename... Args>
-struct Simp<List_Op_Comm<OpCom,symb,O,Args...> >
-{
-	using type = List_Op_Comm<OpCom,symb,typename Simp<O>::type>;
-};
-
-template<typename OpCom, char symb, typename O1, typename O2, typename... Args>
-struct Simp<List_Op_Comm<OpCom,symb,O1,O2,Args...> >
-{
-	using type = typename List_Op_Comm<OpCom,symb,typename Simp<O1>::type>::template append<typename Simp<List_Op_Comm<OpCom,symb,O2,Args...> >::type >::type;
+	using type = typename Simp<typename O::template apply_rec<Simp>::type>::type;
 };
 
 

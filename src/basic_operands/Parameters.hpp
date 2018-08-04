@@ -27,7 +27,13 @@ class Parameter
         static std::string write(const Parameter<na> &p, Args... args)
         {
             return Parameter<n-1>::write(p.p);
-        }
+        };
+
+		template<template<typename T> typename F>
+		struct apply_rec
+		{
+			using type = typename F<Parameter<n> >::type;
+		};
 };
 
 template<>
@@ -50,7 +56,6 @@ class Parameter<1>
             return p.a;
         };
         
-        
         template<unsigned int na,typename ...Args>
         static std::string write(const Parameter<na> &p, Args... args)
         {
@@ -59,7 +64,13 @@ class Parameter<1>
 			ss.setf(std::ios::fixed, std:: ios::floatfield);
 			ss << p.a;
             return ss.str();
-        }
+        };
+
+		template<template<typename T> typename F>
+		struct apply_rec
+		{
+			using type = typename F<Parameter<1> >::type;
+		};
 };
 
 Parameter<1> param(const double &x)

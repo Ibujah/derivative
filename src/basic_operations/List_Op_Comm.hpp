@@ -51,6 +51,13 @@ class List_Op_Comm
 		{
 			using type = List_Op_Comm<OpCom,symb,O...,O1,Ops...>;
 		};
+		
+		template<template<typename T> typename F>
+		struct apply_rec
+		{
+			using type = List_Op_Comm<OpCom,symb,typename F<typename O1::template apply_rec<F>::type>::type>;
+		};
+		
 };
 
 template<typename OpCom, char symb, typename O1, typename O2, typename... Ops>
@@ -102,6 +109,13 @@ class List_Op_Comm<OpCom,symb,O1,O2,Ops...> : public List_Op_Comm<OpCom,symb,O2,
 		struct rev_append<List_Op_Comm<OpCom,symb,O...> >
 		{
 			using type = List_Op_Comm<OpCom,symb,O...,O1,O2,Ops...>;
+		};
+		
+		template<template<typename T> typename F>
+		struct apply_rec
+		{
+			using next = typename List_Op_Comm<OpCom,symb,O2,Ops...>::template apply_rec<F>::type;
+			using type = typename List_Op_Comm<OpCom,symb,typename F<typename O1::template apply_rec<F>::type>::type>::template append<next>::type;
 		};
 };
 
