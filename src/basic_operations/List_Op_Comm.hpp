@@ -57,7 +57,6 @@ class List_Op_Comm
 		{
 			using type = List_Op_Comm<OpCom,symb,typename F<typename O1::template apply_rec<F>::type>::type>;
 		};
-		
 };
 
 template<typename OpCom, char symb, typename O1, typename O2, typename... Ops>
