@@ -4,6 +4,8 @@
 #include "../basic_operands/Integers.hpp"
 #include "../basic_operands/Arguments.hpp"
 #include "../basic_operations/List_Op_Comm.hpp"
+#include "Sort.hpp"
+#include "RemoveOp.hpp"
 
 template<typename F>
 struct FilterInt {
@@ -58,6 +60,89 @@ struct FilterArgsRec
 {
 	using type = typename FilterArgs<typename O::template apply_rec<FilterArgs>::type>::type;
 };
+
+
+template<typename F>
+struct FilterPlus {
+	using type = F;
+};
+
+template<typename O1, typename O2, typename... Ops>
+struct FilterPlus<Plus<O1,O2,Ops... > >
+{
+	using next = typename FilterPlus<Plus<O2,Ops... > >::type;
+	using type = typename Plus<O1>::template append<next>::type;
+};
+
+template<typename O>
+struct FilterPlus<Plus<Zero,O> >
+{
+	using type = O;
+};
+
+template<typename O, typename... Ops>
+struct FilterPlus<Plus<Zero,O,Ops...> >
+{
+	using type = typename FilterPlus<Plus<O,Ops...> >::type;
+};
+
+template<typename O>
+struct FilterPlusRec
+{
+	using type = typename FilterPlus<typename O::template apply_rec<FilterPlus>::type>::type;
+};
+
+
+template<typename F>
+struct FilterMult {
+	using type = F;
+};
+
+template<typename O2, typename... Ops>
+struct FilterMult<Mult<Zero,O2,Ops...> >
+{
+	using type = Zero;
+};
+
+template<typename O>
+struct FilterMult<Mult<One,O> >
+{
+	using type = O;
+};
+
+template<typename O1, typename O2, typename... Ops>
+struct FilterMult<Mult<O1,O2,Ops... > >
+{
+	using next = typename FilterMult<Mult<O2,Ops... > >::type;
+	using type = typename Mult<O1>::template append<next>::type;
+};
+
+template<typename O, typename... Ops>
+struct FilterMult<Mult<One,O,Ops...> >
+{
+	using type = typename FilterMult<Mult<O,Ops...> >::type;
+};
+
+
+template<typename O>
+struct FilterMultRec
+{
+	using type = typename FilterMult<typename O::template apply_rec<FilterMult>::type>::type;
+};
+
+
+template<typename O>
+struct Simp
+{
+	using s1 = typename RemOpRec<O>::type;
+	using s2 = typename SortRec<s1>::type;
+	using s3 = typename FilterIntRec<s2>::type;
+	using s4 = typename FilterArgsRec<s3>::type;
+	using s5 = typename FilterPlusRec<s4>::type;
+	using s6 = typename FilterMultRec<s5>::type;
+	using type = s6;
+};
+
 
 
 #endif //_SIMPLIFY_H_

@@ -13,12 +13,12 @@
 #include "simplification/Factorization.hpp"
 
 
-using F = Plus<X,Y>;
-using G = Plus<X,X>;
-using H = Mult<X,X>;
-using dFdX = Der<F,X>::type;
-using dGdX = Der<G,X>::type;
-using dHdX = Der<H,X>::type;
+using F = Simp<Plus<X,Y> >::type;
+using G = Simp<Plus<X,X> >::type;
+using H = Simp<Mult<X,X> >::type;
+using dFdX = Simp<Der<F,X>::type>::type;
+using dGdX = Simp<Simp<Der<G,X>::type>::type>::type;
+using dHdX = Simp<Der<H,X>::type>::type;
 using FacdHdX = Factorize<Der<H,X>::type>::type;
 using ddGddX = Der<dGdX,X>::type;
 using ddHddX = Der<dHdX,X>::type;
@@ -66,6 +66,6 @@ int main()
 	std::cout << F4::write() << " " << SortRec<F4>::type::write() << " " << FilterIntRec<SortRec<F4>::type >::type::write() << " " << F4::eval(x) << std::endl;
 	std::cout << F5::write() << " " << SortRec<F5>::type::write() << " " << FilterIntRec<SortRec<F5>::type >::type::write() << " " << F5::eval(x,y) << std::endl;
 	std::cout << F6::write() << " " << F7::write() << std::endl;
-	std::cout << F8::write() << " " << FilterArgsRec<FilterIntRec<SortRec<RemOpRec<F8>::type>::type>::type>::type::write() << std::endl;
+	std::cout << F8::write() << " " << Simp<F8>::type::write() << std::endl;
     return 0;
 }
