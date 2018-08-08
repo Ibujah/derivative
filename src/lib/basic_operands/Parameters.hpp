@@ -1,8 +1,9 @@
 #ifndef _PARAMETERS_H_
 #define _PARAMETERS_H_
 
-#include "../differential/Derivative.hpp"
+#include <differential/Derivative.hpp>
 #include "Arguments.hpp"
+
 #include <sstream>
 
 template<unsigned int n>

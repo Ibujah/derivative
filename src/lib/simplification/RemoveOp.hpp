@@ -1,7 +1,7 @@
 #ifndef _REMOVOP_H_
 #define _REMOVOP_H_
 
-#include "../basic_operations/List_Op_Comm.hpp"
+#include <basic_operations/List_Op_Comm.hpp>
 
 template<typename O>
 struct RemOp

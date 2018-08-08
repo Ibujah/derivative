@@ -1,8 +1,8 @@
 #ifndef _POW_H_
 #define _POW_H_
 
-#include "../differential/Derivative.hpp"
-#include "../basic_operands/Integers.hpp"
+#include <differential/Derivative.hpp>
+#include <basic_operands/Integers.hpp>
 #include "Mult.hpp"
 #include "Plus.hpp"
 #include "Ln.hpp"

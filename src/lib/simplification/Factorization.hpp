@@ -1,8 +1,8 @@
 #ifndef _FACTORIZATION_H_
 #define _FACTORIZATION_H_
 
-#include "../basic_operations/Plus.hpp"
-#include "../basic_operations/Mult.hpp"
+#include <basic_operations/Plus.hpp>
+#include <basic_operations/Mult.hpp>
 #include <type_traits>
 
 template<typename EXPR>

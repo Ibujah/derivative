@@ -1,8 +1,8 @@
 #ifndef _MULT_H_
 #define _MULT_H_
 
-#include "../differential/Derivative.hpp"
-#include "../basic_operands/Integers.hpp"
+#include <differential/Derivative.hpp>
+#include <basic_operands/Integers.hpp>
 #include "Plus.hpp"
 
 class OpMult

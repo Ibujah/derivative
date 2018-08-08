@@ -1,7 +1,7 @@
 #ifndef _ARGUMENTS_H_
 #define _ARGUMENTS_H_
 
-#include "../differential/Derivative.hpp"
+#include <differential/Derivative.hpp>
 #include "Integers.hpp"
 
 template<unsigned int n>

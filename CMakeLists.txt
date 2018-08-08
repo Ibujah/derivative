@@ -20,4 +20,6 @@ set(EXEC_NAME derivative)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin/")
 
-add_executable(${EXEC_NAME} ${source_files})
+#add_executable(${EXEC_NAME} ${source_files})
+
+add_subdirectory(src/)

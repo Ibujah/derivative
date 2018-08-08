@@ -1,9 +1,10 @@
 #ifndef _EXP_H_
 #define _EXP_H_
 
-#include "../differential/Derivative.hpp"
-#include "../basic_operands/Integers.hpp"
+#include <differential/Derivative.hpp>
+#include <basic_operands/Integers.hpp>
 #include "Mult.hpp"
+#include <math.h>
 
 template<typename O>
 class Exp
@@ -12,7 +13,7 @@ class Exp
         template<typename ...Args>
 		static inline double eval(Args... args)
 		{
-			return exp(O::eval(args));	
+			return exp(O::eval(args...));	
 		};
 		
         template<typename ...Args>
@@ -31,7 +32,7 @@ class Exp
 template<typename O, typename A>
 struct Der<Exp<O>, A>
 {
-	using type = Mult<Der<O,A>::type,Exp<O> >;
+	using type = Mult<typename Der<O,A>::type,Exp<O> >;
 };
 
 #endif //_EXP_H_

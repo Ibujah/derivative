@@ -1,8 +1,8 @@
 #ifndef _SORT_H_
 #define _SORT_H_
 
-#include "../basic_operands/Integers.hpp"
-#include "../basic_operations/List_Op_Comm.hpp"
+#include <basic_operands/Integers.hpp>
+#include <basic_operations/List_Op_Comm.hpp>
 #include <type_traits>
 
 // defining order relations

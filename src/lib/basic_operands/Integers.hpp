@@ -1,7 +1,7 @@
 #ifndef _INTEGERS_H_
 #define _INTEGERS_H_
 
-#include "../differential/Derivative.hpp"
+#include <differential/Derivative.hpp>
 
 template<unsigned int n, bool b = true>
 class Integer
@@ -25,6 +25,9 @@ class Integer
 			using type = typename F<Integer<n> >::type;
 		};
 };
+
+template<unsigned int n>
+using Negative = Integer<n,false>;
 
 template<unsigned int n,typename A>
 struct Der<Integer<n>,A>

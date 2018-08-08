@@ -1,8 +1,8 @@
 #ifndef _PLUS_H_
 #define _PLUS_H_
 
-#include "../differential/Derivative.hpp"
-#include "../basic_operands/Integers.hpp"
+#include <differential/Derivative.hpp>
+#include <basic_operands/Integers.hpp>
 #include "List_Op_Comm.hpp"
 
 class OpPlus

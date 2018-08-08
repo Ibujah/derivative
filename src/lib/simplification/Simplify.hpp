@@ -1,9 +1,9 @@
 #ifndef _SIMPLIFY_H_
 #define _SIMPLIFY_H_
 
-#include "../basic_operands/Integers.hpp"
-#include "../basic_operands/Arguments.hpp"
-#include "../basic_operations/List_Op_Comm.hpp"
+#include <basic_operands/Integers.hpp>
+#include <basic_operands/Arguments.hpp>
+#include <basic_operations/List_Op_Comm.hpp>
 #include "Sort.hpp"
 #include "RemoveOp.hpp"
 

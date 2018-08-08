@@ -1,8 +1,8 @@
 #ifndef _LN_H_
 #define _LN_H_
 
-#include "../differential/Derivative.hpp"
-#include "../basic_operands/Integers.hpp"
+#include <differential/Derivative.hpp>
+#include <basic_operands/Integers.hpp>
 #include "Mult.hpp"
 #include "Inverse.hpp"
 
