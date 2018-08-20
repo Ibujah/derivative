@@ -1,6 +1,8 @@
 #ifndef _LN_H_
 #define _LN_H_
 
+#include <math.h>
+
 #include <differential/Derivative.hpp>
 #include <basic_operands/Integers.hpp>
 #include "Mult.hpp"
@@ -13,7 +15,7 @@ class Ln
         template<typename ...Args>
 		static inline double eval(Args... args)
 		{
-			return log(O::eval(args));	
+			return log(O::eval(args...));
 		};
 		
         template<typename ...Args>
@@ -32,7 +34,7 @@ class Ln
 template<typename O, typename A>
 struct Der<Ln<O>, A>
 {
-	using type = Mult<Der<O,A>::type,Inverse<O> >;
+	using type = Mult<typename Der<O,A>::type,Inverse<O> >;
 };
 
 #endif //_LN_H_

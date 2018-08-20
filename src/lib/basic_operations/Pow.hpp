@@ -14,7 +14,7 @@ class Pow
         template<typename ...Args>
 		static inline double eval(Args... args)
 		{
-			return pow(O1::eval(args),O2::eval(args));	
+			return pow(O1::eval(args...),O2::eval(args...));
 		};
 		
         template<typename ...Args>
@@ -34,10 +34,10 @@ template<typename O1, typename O2, typename A>
 struct Der<Pow<O1,O2>, A>
 {
 	using type = 
-		Mult<   Pow<O1,Plus<O2,Integer<1,false> >,
+		Mult<   Pow<O1,Plus<O2,Integer<1,false> > >,
 				Plus<
-					Mult<O2,Der<O1,A>::type>,
-					Mult<O1,Ln<O1>,Der<O2,A>::type>
+					Mult<O2,typename Der<O1,A>::type>,
+					Mult<O1,Ln<O1>,typename Der<O2,A>::type>
 					>
 			>;
 };
