@@ -12,6 +12,8 @@ class OpPlus
 		{
 			return arg1 + arg2;	
 		};
+		
+		static constexpr char symb = '+';
 
 
 		template<typename O1, typename O2>
@@ -47,7 +49,7 @@ class OpPlus
 };
 
 template<typename O1, typename... Ops>
-using Plus = List_Op_Comm<OpPlus,'+',O1,Ops...>;
+using Plus = List_Op_Comm<OpPlus,O1,Ops...>;
 
 template<>
 struct Neutral<OpPlus>

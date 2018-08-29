@@ -13,6 +13,8 @@ class OpMult
 			return arg1 * arg2;	
 		};
 		
+		static constexpr char symb = '*';
+		
 		
 		template<typename O1, typename O2>
 		struct OpInt
@@ -44,7 +46,7 @@ class OpMult
 };
 
 template<typename O1, typename... Ops>
-using Mult = List_Op_Comm<OpMult,'*',O1,Ops...>;
+using Mult = List_Op_Comm<OpMult,O1,Ops...>;
 
 template<>
 struct Neutral<OpMult>

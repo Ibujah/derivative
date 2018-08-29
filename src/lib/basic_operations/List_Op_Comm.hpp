@@ -1,7 +1,7 @@
 #ifndef _LIST_OP_COMM_H_
 #define _LIST_OP_COMM_H_
 
-template<typename OpCom, char symb, typename O1, typename... Ops>
+template<typename OpCom, typename O1, typename... Ops>
 class List_Op_Comm
 {
 	protected:
@@ -31,42 +31,42 @@ class List_Op_Comm
 		template<typename O>
 		struct append
 		{
-			using type = List_Op_Comm<OpCom,symb,O1,Ops...,O>;
+			using type = List_Op_Comm<OpCom,O1,Ops...,O>;
 		};
 	
 		template<typename... O>
-		struct append<List_Op_Comm<OpCom,symb,O...> >
+		struct append<List_Op_Comm<OpCom,O...> >
 		{
-			using type = List_Op_Comm<OpCom,symb,O1,Ops...,O...>;
+			using type = List_Op_Comm<OpCom,O1,Ops...,O...>;
 		};
 		
 		template<typename O>
 		struct rev_append
 		{
-			using type = List_Op_Comm<OpCom,symb,O,O1,Ops...>;
+			using type = List_Op_Comm<OpCom,O,O1,Ops...>;
 		};
 	
 		template<typename... O>
-		struct rev_append<List_Op_Comm<OpCom,symb,O...> >
+		struct rev_append<List_Op_Comm<OpCom,O...> >
 		{
-			using type = List_Op_Comm<OpCom,symb,O...,O1,Ops...>;
+			using type = List_Op_Comm<OpCom,O...,O1,Ops...>;
 		};
 		
 		template<template<typename T> typename F>
 		struct apply_rec
 		{
-			using type = List_Op_Comm<OpCom,symb,typename F<typename O1::template apply_rec<F>::type>::type>;
+			using type = List_Op_Comm<OpCom,typename F<typename O1::template apply_rec<F>::type>::type>;
 		};
 };
 
-template<typename OpCom, char symb, typename O1, typename O2, typename... Ops>
-class List_Op_Comm<OpCom,symb,O1,O2,Ops...> : public List_Op_Comm<OpCom,symb,O2,Ops...>
+template<typename OpCom, typename O1, typename O2, typename... Ops>
+class List_Op_Comm<OpCom,O1,O2,Ops...> : public List_Op_Comm<OpCom,O2,Ops...>
 {
 	protected:
         template<typename ...Args>
         static std::string write_int(Args... args)
         {
-            return O1::write(args...) + symb + List_Op_Comm<OpCom,symb,O2,Ops...>::write_int(args...);
+            return O1::write(args...) + OpCom::symb + List_Op_Comm<OpCom,O2,Ops...>::write_int(args...);
         };
 
     public:
@@ -76,45 +76,45 @@ class List_Op_Comm<OpCom,symb,O1,O2,Ops...> : public List_Op_Comm<OpCom,symb,O2,
         template<typename ...Args>
         static inline double eval(Args... args)
         {
-            return OpCom::operation(O1::eval(args...),List_Op_Comm<OpCom,symb,O2,Ops...>::eval(args...));
+            return OpCom::operation(O1::eval(args...),List_Op_Comm<OpCom,O2,Ops...>::eval(args...));
         };
 
         template<typename ...Args>
         static std::string write(Args... args)
         {
-            return "(" + O1::write(args...) + symb + List_Op_Comm<OpCom,symb,O2,Ops...>::write_int(args...) + ")";
+            return "(" + O1::write(args...) + OpCom::symb + List_Op_Comm<OpCom,O2,Ops...>::write_int(args...) + ")";
         }
 		
 
 		template<typename O>
 		struct append
 		{
-			using type = List_Op_Comm<OpCom,symb,O1,O2,Ops...,O>;
+			using type = List_Op_Comm<OpCom,O1,O2,Ops...,O>;
 		};
 	
 		template<typename... O>
-		struct append<List_Op_Comm<OpCom,symb,O...> >
+		struct append<List_Op_Comm<OpCom,O...> >
 		{
-			using type = List_Op_Comm<OpCom,symb,O1,O2,Ops...,O...>;
+			using type = List_Op_Comm<OpCom,O1,O2,Ops...,O...>;
 		};
 		
 		template<typename O>
 		struct rev_append
 		{
-			using type = List_Op_Comm<OpCom,symb,O,O1,O2,Ops...>;
+			using type = List_Op_Comm<OpCom,O,O1,O2,Ops...>;
 		};
 	
 		template<typename... O>
-		struct rev_append<List_Op_Comm<OpCom,symb,O...> >
+		struct rev_append<List_Op_Comm<OpCom,O...> >
 		{
-			using type = List_Op_Comm<OpCom,symb,O...,O1,O2,Ops...>;
+			using type = List_Op_Comm<OpCom,O...,O1,O2,Ops...>;
 		};
 		
 		template<template<typename T> typename F>
 		struct apply_rec
 		{
-			using next = typename List_Op_Comm<OpCom,symb,O2,Ops...>::template apply_rec<F>::type;
-			using type = typename List_Op_Comm<OpCom,symb,typename F<typename O1::template apply_rec<F>::type>::type>::template append<next>::type;
+			using next = typename List_Op_Comm<OpCom,O2,Ops...>::template apply_rec<F>::type;
+			using type = typename List_Op_Comm<OpCom,typename F<typename O1::template apply_rec<F>::type>::type>::template append<next>::type;
 		};
 };
 
