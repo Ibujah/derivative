@@ -31,22 +31,94 @@ SOFTWARE.
 #include "Sort.hpp"
 #include "RemoveOp.hpp"
 
-template<typename F>
+/*template<typename F>
 struct FilterInt {
 	using type = F;
 };
 
-template<typename OpCom, char symb, unsigned int n1, unsigned int n2, bool b1, bool b2>
-struct FilterInt<List_Op_Comm<OpCom,symb,Integer<n1,b1>,Integer<n2,b2> > >
+template<typename OpCom, unsigned int n1, unsigned int n2, bool b1, bool b2>
+struct FilterInt<List_Op_Comm<OpCom,Integer<n1,b1>,Integer<n2,b2> > >
 {
 	using type = typename OpCom::template OpInt<Integer<n1,b1>,Integer<n2,b2> >::type;
 };
 
-template<typename OpCom, char symb, unsigned int n1, unsigned int n2, bool b1, bool b2, typename O, typename... Ops>
-struct FilterInt<List_Op_Comm<OpCom,symb,Integer<n1,b1>,Integer<n2,b2>,O,Ops...> >
+template<typename OpCom, unsigned int n1, unsigned int n2, bool b1, bool b2, typename O, typename... Ops>
+struct FilterInt<List_Op_Comm<OpCom,Integer<n1,b1>,Integer<n2,b2>,O,Ops...> >
 {
-	using type = typename FilterInt<List_Op_Comm<OpCom,symb,typename OpCom::template OpInt<Integer<n1,b1>,Integer<n2,b2> >::type,O,Ops...> >::type;
+	using type = typename FilterInt<List_Op_Comm<OpCom,typename OpCom::template OpInt<Integer<n1,b1>,Integer<n2,b2> >::type,O,Ops...> >::type;
 };
+
+template<typename O>
+struct FilterIntRec
+{
+	using type = typename FilterInt<typename O::template apply_rec<FilterInt>::type>::type;
+};*/
+
+template<typename Filt, typename F>
+struct FilterList {
+	using type = F;
+};
+
+template<typename Filt, typename OpCom, typename A, typename B>
+struct FilterList<Filt,List_Op_Comm<OpCom,A,B> > {
+	static const bool valA = Filt::template is_valid<A>::value;
+	static const bool valB = Filt::template is_valid<B>::value;
+	using type = typename std::conditional<
+		valA && valB,
+		List_Op_Comm<OpCom,typename Filt::template comb<A,B>::type>,
+		List_Op_Comm<OpCom,A,B>
+		>::type;
+};
+
+template<typename Filt, typename OpCom, typename A, typename B, typename C, typename... Ops>
+struct FilterList<Filt,List_Op_Comm<OpCom,A,B,C,Ops...> > {
+	static const bool valA = Filt::template is_valid<A>::value;
+	static const bool valB = Filt::template is_valid<B>::value;
+
+	using notand = typename std::conditional<
+		valA,
+		typename FilterList<Filt,List_Op_Comm<OpCom,A,C,Ops...> >::type::template rev_append<B>::type,
+		typename FilterList<Filt,List_Op_Comm<OpCom,B,C,Ops...> >::type::template rev_append<A>::type
+		>::type;
+
+	using type = typename std::conditional<
+		valA && valB,
+		typename FilterList<Filt,List_Op_Comm<OpCom,typename Filt::template comb<A,B>::type,C,Ops...> >::type,
+		notand
+		>::type;
+};
+
+
+template<typename OpCom>
+struct FiltInt
+{
+	template<typename A>
+	struct is_valid
+	{
+		static const bool value = false;
+	};
+
+	template<unsigned int n, bool b>
+	struct is_valid<Integer<n,b> >
+	{
+		static const bool value = true;
+	};
+	
+	template<typename A, typename B>
+	struct comb
+	{
+		using type = void;
+	};
+
+	template<unsigned int n1, bool b1, unsigned int n2, bool b2>
+	struct comb<Integer<n1,b1>,Integer<n2,b2> >
+	{
+		using type = typename OpCom::template OpInt<Integer<n1,b1>,Integer<n2,b2> >::type;
+	};
+};
+
+template<typename O>
+using FilterInt = FilterList<FiltInt<typename O::opcom>,O>;
 
 template<typename O>
 struct FilterIntRec
@@ -60,23 +132,23 @@ struct FilterArgs {
 	using type = F;
 };
 
-template<typename OpCom, char symb, unsigned int n, bool b, typename O, typename... Ops>
-struct FilterArgs<List_Op_Comm<OpCom,symb,Integer<n,b>,O,Ops... > >
+template<typename OpCom, unsigned int n, bool b, typename O, typename... Ops>
+struct FilterArgs<List_Op_Comm<OpCom,Integer<n,b>,O,Ops... > >
 {
-	using next = typename FilterArgs<List_Op_Comm<OpCom,symb,O,Ops... > >::type;
-	using type = typename List_Op_Comm<OpCom,symb,Integer<n,b> >::template append<next>::type;
+	using next = typename FilterArgs<List_Op_Comm<OpCom,O,Ops... > >::type;
+	using type = typename List_Op_Comm<OpCom,Integer<n,b> >::template append<next>::type;
 };
 
 template<unsigned int n, typename... Ops>
-struct FilterArgs<List_Op_Comm<OpPlus,'+',Argument<n>,Argument<n>,Ops... > >
+struct FilterArgs<List_Op_Comm<OpPlus,Argument<n>,Argument<n>,Ops... > >
 {
-	using type = typename FilterArgs<List_Op_Comm<OpPlus,'+',Mult<Integer<2>,Argument<n> >,Ops... > >::type;
+	using type = typename FilterArgs<List_Op_Comm<OpPlus,Mult<Integer<2>,Argument<n> >,Ops... > >::type;
 };
 
 template<unsigned int n1, unsigned int n, typename... Ops>
-struct FilterArgs<List_Op_Comm<OpPlus,'+',Mult<Integer<n1>,Argument<n> >,Argument<n>,Ops... > >
+struct FilterArgs<List_Op_Comm<OpPlus,Mult<Integer<n1>,Argument<n> >,Argument<n>,Ops... > >
 {
-	using type = typename FilterArgs<List_Op_Comm<OpPlus,'+',Mult<Integer<n1+1>,Argument<n> >,Ops... > >::type;
+	using type = typename FilterArgs<List_Op_Comm<OpPlus,Mult<Integer<n1+1>,Argument<n> >,Ops... > >::type;
 };
 
 template<typename O>
