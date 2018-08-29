@@ -53,8 +53,8 @@ class Integer
 template<unsigned int n>
 using Negative = Integer<n,false>;
 
-template<unsigned int n,typename A>
-struct Der<Integer<n>,A>
+template<unsigned int n, bool b,typename A>
+struct Der<Integer<n,b>,A>
 {
     using type = Integer<0>;
 };

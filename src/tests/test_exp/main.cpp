@@ -12,6 +12,9 @@
 using F1 = Exp<X>;
 using F2 = Exp<Mult<Negative<1>,X,X,Inverse<Integer<2> > > >;
 
+using DF1 = Der<F1,X>::type;
+using DF2 = Der<F2,X>::type;
+
 int main()
 {
 	std::cout.precision(2);
@@ -21,6 +24,9 @@ int main()
 	
 	std::cout << F1::write() << " " << F1::eval(x0) << std::endl;
 	std::cout << F2::write() << " " << F2::eval(x0) << std::endl;
+	
+	std::cout << DF1::write() << " " << DF1::eval(x0) << std::endl;
+	std::cout << DF2::write() << " " << DF2::eval(x0) << std::endl;
 	
     return 0;
 }
