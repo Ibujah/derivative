@@ -50,39 +50,39 @@ template<typename O1, typename O2>
 struct Separate
 {};
 
-template<typename OpCom, char symb, typename O1, typename O2, typename... Args>
-struct Separate<O1,List_Op_Comm<OpCom,symb,O2,Args...> >
+template<typename OpCom, typename O1, typename O2, typename... Args>
+struct Separate<O1,List_Op_Comm<OpCom,O2,Args...> >
 {
 	using inf = typename std::conditional
 				<Order<O1,O2>::value,
 				void,
-				List_Op_Comm<OpCom,symb,O2> >::type;
+				List_Op_Comm<OpCom,O2> >::type;
 	using sup = typename std::conditional
 				<Order<O1,O2>::value,
-				List_Op_Comm<OpCom,symb,O2>,
+				List_Op_Comm<OpCom,O2>,
 				void>::type;
 };
 
-template<typename OpCom, char symb, typename O1, typename O2, typename O3, typename... Args>
-struct Separate<O1,List_Op_Comm<OpCom,symb,O2,O3,Args...> >
+template<typename OpCom, typename O1, typename O2, typename O3, typename... Args>
+struct Separate<O1,List_Op_Comm<OpCom,O2,O3,Args...> >
 {
-	using infnext = typename Separate<O1,List_Op_Comm<OpCom,symb,O3,Args...> >::inf;
-	using supnext = typename Separate<O1,List_Op_Comm<OpCom,symb,O3,Args...> >::sup;
+	using infnext = typename Separate<O1,List_Op_Comm<OpCom,O3,Args...> >::inf;
+	using supnext = typename Separate<O1,List_Op_Comm<OpCom,O3,Args...> >::sup;
 	
 	using inf = typename std::conditional
 				<Order<O1,O2>::value,
 				infnext,
 				typename std::conditional
 					<std::is_same<infnext,void>::value,
-					List_Op_Comm<OpCom,symb,O2>,
-					typename List_Op_Comm<OpCom,symb,O2>::template append<infnext>::type >::type >::type;
+					List_Op_Comm<OpCom,O2>,
+					typename List_Op_Comm<OpCom,O2>::template append<infnext>::type >::type >::type;
 
 	using sup = typename std::conditional
 				<Order<O1,O2>::value,
 				typename std::conditional
 					<std::is_same<supnext,void>::value,
-					List_Op_Comm<OpCom,symb,O2>,
-					typename List_Op_Comm<OpCom,symb,O2>::template append<supnext>::type >::type,
+					List_Op_Comm<OpCom,O2>,
+					typename List_Op_Comm<OpCom,O2>::template append<supnext>::type >::type,
 				supnext>::type;
 };
 
@@ -93,17 +93,17 @@ struct Sort {
 	using type = F;
 };
 
-template<typename OpCom, char symb, typename O1, typename O2, typename... Args>
-struct Sort<List_Op_Comm<OpCom,symb,O1,O2,Args...> >
+template<typename OpCom, typename O1, typename O2, typename... Args>
+struct Sort<List_Op_Comm<OpCom,O1,O2,Args...> >
 {
 	using pivot = O1;
-	using inf = typename Sort<typename Separate<O1,List_Op_Comm<OpCom,symb,O2,Args...> >::inf>::type;
-	using sup = typename Sort<typename Separate<O1,List_Op_Comm<OpCom,symb,O2,Args...> >::sup>::type;
+	using inf = typename Sort<typename Separate<O1,List_Op_Comm<OpCom,O2,Args...> >::inf>::type;
+	using sup = typename Sort<typename Separate<O1,List_Op_Comm<OpCom,O2,Args...> >::sup>::type;
 
 	using inter = typename std::conditional
 					<std::is_same<sup,void>::value,
-					List_Op_Comm<OpCom,symb,pivot>,
-					typename List_Op_Comm<OpCom,symb,pivot>::template append<sup>::type >::type;
+					List_Op_Comm<OpCom,pivot>,
+					typename List_Op_Comm<OpCom,pivot>::template append<sup>::type >::type;
 	
 	using type  = typename std::conditional
 					<std::is_same<inf,void>::value,
