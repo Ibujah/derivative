@@ -25,7 +25,7 @@ SOFTWARE.
 #ifndef _MULT_H_
 #define _MULT_H_
 
-#include <differential/Derivative.hpp>
+#include <meta_operations/MetaOperations.hpp>
 #include <basic_operands/Integers.hpp>
 #include "Plus.hpp"
 
@@ -45,27 +45,27 @@ class OpMult
 		{};
 
 		template<unsigned int n1, unsigned int n2>
-		struct OpInt<Integer<n1>,Integer<n2> >
+		struct OpInt<Positive<n1>,Positive<n2> >
 		{
-			using type = Integer<n1*n2>;
+			using type = Positive<n1*n2>;
 		};
 		
 		template<unsigned int n1, unsigned int n2>
-		struct OpInt<Integer<n1,false>,Integer<n2,false> >
+		struct OpInt<Negative<n1>,Negative<n2> >
 		{
-			using type = Integer<n1*n2>;
+			using type = Positive<n1*n2>;
 		};
 		
 		template<unsigned int n1, unsigned int n2>
-		struct OpInt<Integer<n1,true>,Integer<n2,false> >
+		struct OpInt<Positive<n1>,Negative<n2> >
 		{
-			using type = Integer<n1*n2,false>;
+			using type = Negative<n1*n2>;
 		};
 		
 		template<unsigned int n1, unsigned int n2>
-		struct OpInt<Integer<n1,false>,Integer<n2,true> >
+		struct OpInt<Negative<n1>,Positive<n2> >
 		{
-			using type = Integer<n1*n2,false>;
+			using type = Negative<n1*n2>;
 		};
 };
 

@@ -22,81 +22,54 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-#ifndef _INTEGERS_H_
-#define _INTEGERS_H_
+#ifndef _MULTVEC2_H_
+#define _MULTVEC2_H_
 
 #include <meta_operations/MetaOperations.hpp>
+#include <basic_operands/Vector2.hpp>
+#include "PlusVec2.hpp"
 
-/**
- * @brief Class representing a positive or negative integer
- * @param n  Absolute value of the integer
- * @param p  True: positive, False: negative
- */
-template<unsigned int n, bool p>
-class Integer
+template<typename O1, typename O2>
+class MultVec2
 {
-    public:
-		/**
-		 * @brief Evaluation of the integer value
-		 */
+	public:
         template<typename ...Args>
-        static inline double eval(Args... args)
-        {
-			return (p?1.0:-1.0)*(double)n;
-        };
-
-		/**
-		 * @brief Writing of the integer value
-		 */
+		static inline Eigen::Vector2d eval(Args... args)
+		{
+			const double& scal = O1::eval(args...);
+			const Eigen::Vector2d& vec = O2::eval(args...);
+			return scal*vec;
+		};
+		
         template<typename ...Args>
         static std::string write(Args... args)
         {
-			return (p?"":"-") + std::to_string(n);
+            return O1::write() + "*" + O2::write();
         };
 		
-		/**
-		 * @brief Struct recursively applying the modifier F<T>
-		 */
 		template<template<typename T> typename F>
 		struct apply_rec
 		{
-			using type = typename F<Integer<n,p> >::type;
+			using type = MultVec2<
+				typename F<typename O1::template apply_rec<F>::type>::type,
+				typename F<typename O2::template apply_rec<F>::type>::type >;
 		};
 
 		/**
 		 * @brief Importance order
 		 */
-		static const unsigned int outerOrder = 0;
+		static const unsigned int outerOrder = 3;
 
 		/**
 		 * @brief Importance order
 		 */
-		static const unsigned int innerOrder = n;
+		static const unsigned int innerOrder = 0;
 };
 
-/**
- * @brief Class representing a shorter way to declare a positive integer
- */
-template<unsigned int n>
-using Positive = Integer<n,true>;
-
-/**
- * @brief Class representing a shorter way to declare a negative integer
- */
-template<unsigned int n>
-using Negative = Integer<n,false>;
-
-/**
- * @brief Derivative of the integer with respect to an argument
- */
-template<unsigned int n, bool p,typename A>
-struct Der<Integer<n,p>,A>
+template<typename O1, typename O2, typename A>
+struct Der<MultVec2<O1,O2>, A>
 {
-    using type = Integer<0,true>;
+    using type = PlusVec2<MultVec2<typename Der<O1,A>::type,O2>,MultVec2<O1,typename Der<O2,A>::type> >;
 };
 
-using Zero = Integer<0,true>;
-using One = Integer<1,true>;
-
-
-#endif //_INTEGERS_H_
+#endif //_MULTVEC2_H_

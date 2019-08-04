@@ -10,7 +10,7 @@
 #include <basic_operations/Exp.hpp>
 
 using F1 = Exp<X>;
-using F2 = Exp<Mult<Negative<1>,X,X,Inverse<Integer<2> > > >;
+using F2 = Exp<Mult<Negative<1>,X,X,Inverse<Positive<2> > > >;
 
 using DF1 = Der<F1,X>::type;
 using DF2 = Der<F2,X>::type;

@@ -36,7 +36,7 @@ struct RemOp
 template<typename OpCom, typename O1, typename... Ops>
 struct RemOp<List_Op_Comm<OpCom,O1,Ops...> >
 {
-	using type = List_Op_Comm<OpCom,O1>;
+	using type = List_Op_Comm<OpCom,O1,Ops...>;
 };
 
 template<typename OpCom, typename O1, typename... Ops1, typename... Ops>

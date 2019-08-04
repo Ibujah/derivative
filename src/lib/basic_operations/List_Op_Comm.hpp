@@ -81,6 +81,16 @@ class List_Op_Comm
 		{
 			using type = List_Op_Comm<OpCom,typename F<typename O1::template apply_rec<F>::type>::type>;
 		};
+
+		/**
+		 * @brief Importance order
+		 */
+		static const unsigned int outerOrder = 3;
+
+		/**
+		 * @brief Importance order
+		 */
+		static const unsigned int innerOrder = 0;
 };
 
 template<typename OpCom, typename O1, typename O2, typename... Ops>

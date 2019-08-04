@@ -22,81 +22,56 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-#ifndef _INTEGERS_H_
-#define _INTEGERS_H_
+#ifndef _DOTVEC3_H_
+#define _DOTVEC3_H_
 
 #include <meta_operations/MetaOperations.hpp>
+#include <basic_operands/Vector3.hpp>
+#include "Plus.hpp"
 
-/**
- * @brief Class representing a positive or negative integer
- * @param n  Absolute value of the integer
- * @param p  True: positive, False: negative
- */
-template<unsigned int n, bool p>
-class Integer
+template<typename O1, typename O2>
+class DotVec3
 {
-    public:
-		/**
-		 * @brief Evaluation of the integer value
-		 */
+	public:
         template<typename ...Args>
-        static inline double eval(Args... args)
-        {
-			return (p?1.0:-1.0)*(double)n;
-        };
-
-		/**
-		 * @brief Writing of the integer value
-		 */
+		static inline double eval(Args... args)
+		{
+			const Eigen::Vector3d& vec1 = O1::eval(args...);
+			const Eigen::Vector3d& vec2 = O2::eval(args...);
+			return vec1.dot(vec2);
+		};
+		
         template<typename ...Args>
         static std::string write(Args... args)
         {
-			return (p?"":"-") + std::to_string(n);
+            return "<" + O1::write() + "," + O2::write() + ">";
         };
 		
-		/**
-		 * @brief Struct recursively applying the modifier F<T>
-		 */
 		template<template<typename T> typename F>
 		struct apply_rec
 		{
-			using type = typename F<Integer<n,p> >::type;
+			using type = DotVec3<
+				typename F<typename O1::template apply_rec<F>::type>::type,
+				typename F<typename O2::template apply_rec<F>::type>::type >;
 		};
 
 		/**
 		 * @brief Importance order
 		 */
-		static const unsigned int outerOrder = 0;
+		static const unsigned int outerOrder = 3;
 
 		/**
 		 * @brief Importance order
 		 */
-		static const unsigned int innerOrder = n;
+		static const unsigned int innerOrder = 0;
 };
 
-/**
- * @brief Class representing a shorter way to declare a positive integer
- */
-template<unsigned int n>
-using Positive = Integer<n,true>;
-
-/**
- * @brief Class representing a shorter way to declare a negative integer
- */
-template<unsigned int n>
-using Negative = Integer<n,false>;
-
-/**
- * @brief Derivative of the integer with respect to an argument
- */
-template<unsigned int n, bool p,typename A>
-struct Der<Integer<n,p>,A>
+template<typename O1, typename O2, typename A>
+struct Der<DotVec3<O1,O2>, A>
 {
-    using type = Integer<0,true>;
+	using DerO1 = typename Der<O1,A>::type;
+	using DerO2 = typename Der<O2,A>::type;
+    using type = Plus<DotVec3<DerO1,O2>, DotVec3<O1,DerO2> >;
 };
 
-using Zero = Integer<0,true>;
-using One = Integer<1,true>;
-
-
-#endif //_INTEGERS_H_
+#endif //_DOTVEC3_H_

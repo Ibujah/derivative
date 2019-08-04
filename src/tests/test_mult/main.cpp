@@ -9,7 +9,7 @@
 using F1 = Mult<X,Y>;
 using F2 = Mult<One,X>;
 using F3 = Mult<One,X,X>;
-using F4 = Mult<Integer<2>,X,X,A1>;
+using F4 = Mult<Positive<2>,X,X,A1>;
 using F5 = Mult<Negative<3>,X,X,Mult<Y,Y> >;
 
 using DF1 = Der<F1,X>::type;

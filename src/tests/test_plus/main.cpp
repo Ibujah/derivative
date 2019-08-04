@@ -9,7 +9,7 @@
 using F1 = Plus<X,Y>;
 using F2 = Plus<One,X>;
 using F3 = Plus<One,X,X>;
-using F4 = Plus<Integer<2>,X,X,A1>;
+using F4 = Plus<Positive<2>,X,X,A1>;
 using F5 = Plus<Negative<3>,X,X,Plus<Y,Y> >;
 
 using DF1 = Der<F1,X>::type;

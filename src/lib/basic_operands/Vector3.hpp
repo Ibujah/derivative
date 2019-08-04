@@ -22,36 +22,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-#ifndef _INTEGERS_H_
-#define _INTEGERS_H_
+#ifndef _VECTOR3_H_
+#define _VECTOR3_H_
 
 #include <meta_operations/MetaOperations.hpp>
+#include <Eigen/Dense>
 
 /**
- * @brief Class representing a positive or negative integer
- * @param n  Absolute value of the integer
- * @param p  True: positive, False: negative
+ * @brief Class representing a 3D vector
  */
-template<unsigned int n, bool p>
-class Integer
+template<typename X0, typename X1, typename X2>
+class Vector3
 {
     public:
 		/**
-		 * @brief Evaluation of the integer value
+		 * @brief Evaluation of the vector value
 		 */
-        template<typename ...Args>
-        static inline double eval(Args... args)
-        {
-			return (p?1.0:-1.0)*(double)n;
-        };
+        template<typename T, typename ...Args>
+        static inline Eigen::Vector3d eval(const T &p, Args... args)
+		{
+			return Eigen::Vector3d(X0::eval(p,args...),X1::eval(p,args...),X2::eval(p,args...));
+		};
 
 		/**
-		 * @brief Writing of the integer value
+		 * @brief Writing of the vector value
 		 */
         template<typename ...Args>
         static std::string write(Args... args)
         {
-			return (p?"":"-") + std::to_string(n);
+            return "(" + X0::write(args...) + "," + X1::write(args...) + "," + X2::write(args...) + ")";
         };
 		
 		/**
@@ -60,43 +59,39 @@ class Integer
 		template<template<typename T> typename F>
 		struct apply_rec
 		{
-			using type = typename F<Integer<n,p> >::type;
+			using type = Vector3<typename X0::template apply_rec<F>::type,
+								 typename X1::template apply_rec<F>::type,
+								 typename X2::template apply_rec<F>::type>;
 		};
 
 		/**
 		 * @brief Importance order
 		 */
-		static const unsigned int outerOrder = 0;
+		static const unsigned int outerOrder = 3;
 
 		/**
 		 * @brief Importance order
 		 */
-		static const unsigned int innerOrder = n;
+		static const unsigned int innerOrder = 0;
 };
 
 /**
- * @brief Class representing a shorter way to declare a positive integer
+ * @brief Derivative of the parameter with respect to an argument
  */
-template<unsigned int n>
-using Positive = Integer<n,true>;
-
-/**
- * @brief Class representing a shorter way to declare a negative integer
- */
-template<unsigned int n>
-using Negative = Integer<n,false>;
-
-/**
- * @brief Derivative of the integer with respect to an argument
- */
-template<unsigned int n, bool p,typename A>
-struct Der<Integer<n,p>,A>
+template<typename X0, typename X1, typename X2, typename A>
+struct Der<Vector3<X0,X1,X2>,A>
 {
-    using type = Integer<0,true>;
+    using type = Vector3<typename Der<X0,A>::type,typename Der<X1,A>::type,typename Der<X2,A>::type>;
 };
 
-using Zero = Integer<0,true>;
-using One = Integer<1,true>;
+/**
+ * @brief Simplification of the 3D vector
+ */
+template<typename X0, typename X1, typename X2>
+struct Simp<Vector3<X0,X1,X2> >
+{
+    using type = Vector3<typename Simp<X0>::type,typename Simp<X1>::type,typename Simp<X2>::type>;
+};
 
+#endif //_VECTOR3_H_
 
-#endif //_INTEGERS_H_

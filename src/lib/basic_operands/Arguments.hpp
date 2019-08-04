@@ -25,50 +25,79 @@ SOFTWARE.
 #ifndef _ARGUMENTS_H_
 #define _ARGUMENTS_H_
 
-#include <differential/Derivative.hpp>
+#include <meta_operations/MetaOperations.hpp>
 #include "Integers.hpp"
 
+/**
+ * @brief Class representing the n-th input argument of a function
+ */
 template<unsigned int n>
 class Argument
 {
     public:
-        template<typename T, typename ...Args>
-        static inline double eval(const T &p, Args... args)
-        {
-            return Argument<n>::eval(args...);
-        };
+		/**
+		 * @brief Recursive evaluation of the n-th argument of the function
+		 */
         template<typename ...Args>
         static inline double eval(const double &x, Args... args)
         {
             return Argument<n-1>::eval(args...);
         };
+
+		/**
+		 * @brief Recursive evaluation of the n-th argument of the function
+		 */
+        template<typename T, typename ...Args>
+        static inline double eval(const T &val, Args... args)
+        {
+            return eval(args...);
+        };
+
+		/**
+		 * @brief Recursive writing of the n-th argument of the function
+		 */
         template<typename ...Args>
         static std::string write(Args... args)
         {
             return "x" + std::to_string(n);
         };
 		
+		/**
+		 * @brief Struct recursively applying the modifier F<T>
+		 */
 		template<template<typename T> typename F>
 		struct apply_rec
 		{
 			using type = typename F<Argument<n> >::type;
 		};
+
+		/**
+		 * @brief Importance order
+		 */
+		static const unsigned int outerOrder = 1;
+
+		/**
+		 * @brief Importance order
+		 */
+		static const unsigned int innerOrder = n;
 };
 
 template<>
 class Argument<0>
 {
     public:
-        template<typename T, typename ...Args>
-        static inline double eval(const T &p, Args... args)
-        {
-            return Argument<0>::eval(args...);
-        };
         template<typename ...Args>
         static inline double eval(const double &x, Args... args)
         {
             return x;
         };
+
+        template<typename T, typename ...Args>
+        static inline double eval(const T &val, Args... args)
+        {
+            return eval(args...);
+        };
+
         template<typename ...Args>
         static std::string write(Args... args)
         {
@@ -80,19 +109,34 @@ class Argument<0>
 		{
 			using type = typename F<Argument<0> >::type;
 		};
+
+		/**
+		 * @brief Importance order
+		 */
+		static const unsigned int outerOrder = 1;
+
+		/**
+		 * @brief Importance order
+		 */
+		static const unsigned int innerOrder = 0;
 };
 
+/**
+ * @brief Derivative of the argument with respect to an argument
+ */
 template<unsigned int n>
 struct Der<Argument<n>,Argument<n> >
 {
     using type = One;
 };
 
-template<unsigned int n, unsigned int nA>
-struct Der<Argument<n>,Argument<nA> >
+template<unsigned int n, unsigned int m>
+struct Der<Argument<n>,Argument<m> >
 {
     using type = Zero;
 };
+
+
 
 using X = Argument<0>;
 using Y = Argument<1>;

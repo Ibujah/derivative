@@ -31,9 +31,15 @@ SOFTWARE.
 #include "Sort.hpp"
 #include "RemoveOp.hpp"
 
-/*template<typename F>
+template<typename F>
 struct FilterInt {
 	using type = F;
+};
+
+template<typename OpCom, typename... Ops>
+struct FilterInt<List_Op_Comm<OpCom,Zero,Ops... > >
+{
+	using type = typename FilterInt<List_Op_Comm<OpCom,Ops... > >::type;
 };
 
 template<typename OpCom, unsigned int n1, unsigned int n2, bool b1, bool b2>
@@ -52,7 +58,11 @@ template<typename O>
 struct FilterIntRec
 {
 	using type = typename FilterInt<typename O::template apply_rec<FilterInt>::type>::type;
-};*/
+};
+
+
+
+
 
 template<typename Filt, typename F>
 struct FilterList {
@@ -89,43 +99,6 @@ struct FilterList<Filt,List_Op_Comm<OpCom,A,B,C,Ops...> > {
 };
 
 
-template<typename OpCom>
-struct FiltInt
-{
-	template<typename A>
-	struct is_valid
-	{
-		static const bool value = false;
-	};
-
-	template<unsigned int n, bool b>
-	struct is_valid<Integer<n,b> >
-	{
-		static const bool value = true;
-	};
-	
-	template<typename A, typename B>
-	struct comb
-	{
-		using type = void;
-	};
-
-	template<unsigned int n1, bool b1, unsigned int n2, bool b2>
-	struct comb<Integer<n1,b1>,Integer<n2,b2> >
-	{
-		using type = typename OpCom::template OpInt<Integer<n1,b1>,Integer<n2,b2> >::type;
-	};
-};
-
-template<typename O>
-using FilterInt = FilterList<FiltInt<typename O::opcom>,O>;
-
-template<typename O>
-struct FilterIntRec
-{
-	using type = typename FilterInt<typename O::template apply_rec<FilterInt>::type>::type;
-};
-
 
 template<typename F>
 struct FilterArgs {
@@ -142,13 +115,13 @@ struct FilterArgs<List_Op_Comm<OpCom,Integer<n,b>,O,Ops... > >
 template<unsigned int n, typename... Ops>
 struct FilterArgs<List_Op_Comm<OpPlus,Argument<n>,Argument<n>,Ops... > >
 {
-	using type = typename FilterArgs<List_Op_Comm<OpPlus,Mult<Integer<2>,Argument<n> >,Ops... > >::type;
+	using type = typename FilterArgs<List_Op_Comm<OpPlus,Mult<Positive<2>,Argument<n> >,Ops... > >::type;
 };
 
 template<unsigned int n1, unsigned int n, typename... Ops>
-struct FilterArgs<List_Op_Comm<OpPlus,Mult<Integer<n1>,Argument<n> >,Argument<n>,Ops... > >
+struct FilterArgs<List_Op_Comm<OpPlus,Mult<Positive<n1>,Argument<n> >,Argument<n>,Ops... > >
 {
-	using type = typename FilterArgs<List_Op_Comm<OpPlus,Mult<Integer<n1+1>,Argument<n> >,Ops... > >::type;
+	using type = typename FilterArgs<List_Op_Comm<OpPlus,Mult<Positive<n1+1>,Argument<n> >,Ops... > >::type;
 };
 
 template<typename O>
@@ -156,6 +129,10 @@ struct FilterArgsRec
 {
 	using type = typename FilterArgs<typename O::template apply_rec<FilterArgs>::type>::type;
 };
+
+
+
+
 
 
 template<typename F>
@@ -232,11 +209,12 @@ struct Simp
 {
 	using s1 = typename RemOpRec<O>::type;
 	using s2 = typename SortRec<s1>::type;
-	using s3 = typename FilterIntRec<s2>::type;
-	using s4 = typename FilterArgsRec<s3>::type;
-	using s5 = typename FilterPlusRec<s4>::type;
-	using s6 = typename FilterMultRec<s5>::type;
-	using type = s6;
+	using s3 = typename FilterMultRec<s2>::type;
+	using s4 = typename FilterPlusRec<s3>::type;
+	using s5 = typename SortRec<s4>::type;
+	using s6 = typename FilterIntRec<s5>::type;
+	using s7 = typename FilterArgsRec<s6>::type;
+	using type = s7;
 };
 
 

@@ -25,93 +25,102 @@ SOFTWARE.
 #ifndef _SORT_H_
 #define _SORT_H_
 
-#include <basic_operands/Integers.hpp>
 #include <basic_operations/List_Op_Comm.hpp>
 #include <type_traits>
 
-// defining order relations
+/**
+ * @brief Class representing an order relation between functions, using their inner and outer orders
+ */
 template<typename O1, typename O2> // inferior or equals
-struct Order {
-	static const bool value = std::true_type::value;
-	using lower = O1;
-	using higher = O2;
+struct Order
+{
+	static const unsigned int outerO1 = O1::outerOrder;
+	static const unsigned int outerO2 = O2::outerOrder;
+
+	static const unsigned int innerO1 = O1::innerOrder;
+	static const unsigned int innerO2 = O2::innerOrder;
+	
+	/**
+	 * @brief True iff O1 <= O2
+	 */
+	static const bool value = ((outerO1 == outerO2 && innerO1 <= innerO2) || (outerO1 < outerO2));
+	
+	/**
+	 * @brief Lower between O1 and O2
+	 */
+	using lower = typename std::conditional<value,O1,O2>::type;
+
+	/**
+	 * @brief Higher between O1 and O2
+	 */
+	using higher = typename std::conditional<value,O2,O1>::type;
 };
 
-// Integer
-template<unsigned int n, typename O>
-struct Order<O,Integer<n> > {
-	static const bool value = std::false_type::value;
-	using lower = Integer<n>;
-	using higher = O;
-};
-
-template<unsigned int n, unsigned int na>
-struct Order<Integer<n>,Argument<na> > {
-	static const bool value = std::true_type::value;
-	using lower = Integer<n>;
-	using higher = Argument<na>;
-};
-
-
-// arguments
-template<unsigned int n1, unsigned int n2>
-struct Order<Argument<n1>,Argument<n2> > {
-	static const bool value = n1 <= n2;
-	using lower  = Argument<n1<=n2?n1:n2>;
-	using higher = Argument<n1<=n2?n2:n1>;
-};
-
-template<unsigned int n, typename O>
-struct Order<O,Argument<n> > {
-	static const bool value = std::false_type::value;
-	using lower = Argument<n>;
-	using higher = O;
-};
-
-
-
-template<typename O1, typename O2>
-struct Separate
+/**
+ * @brief Partition of the List_Op_Comm L relatively to the pivot P (for quicksort algorithm)
+ * @detail Return inf, the list of elements of L that are lower to P, and sup, the list of elements of L that are higher to P
+ */
+template<typename P, typename L>
+struct Partition
 {};
 
-template<typename OpCom, typename O1, typename O2, typename... Args>
-struct Separate<O1,List_Op_Comm<OpCom,O2,Args...> >
+template<typename OpCom, typename P, typename O1, typename... Args>
+struct Partition<P,List_Op_Comm<OpCom,O1,Args...> >
 {
 	using inf = typename std::conditional
-				<Order<O1,O2>::value,
+				<Order<P,O1>::value,
 				void,
-				List_Op_Comm<OpCom,O2> >::type;
+				List_Op_Comm<OpCom,O1> >::type;
 	using sup = typename std::conditional
-				<Order<O1,O2>::value,
-				List_Op_Comm<OpCom,O2>,
+				<Order<P,O1>::value,
+				List_Op_Comm<OpCom,O1>,
 				void>::type;
 };
 
-template<typename OpCom, typename O1, typename O2, typename O3, typename... Args>
-struct Separate<O1,List_Op_Comm<OpCom,O2,O3,Args...> >
+template<typename OpCom, typename P, typename O1, typename O2, typename... Args>
+struct Partition<P,List_Op_Comm<OpCom,O1,O2,Args...> >
 {
-	using infnext = typename Separate<O1,List_Op_Comm<OpCom,O3,Args...> >::inf;
-	using supnext = typename Separate<O1,List_Op_Comm<OpCom,O3,Args...> >::sup;
+	/**
+	 * @brief Elements lower to P
+	 */
+	using infNext = typename Partition<P,List_Op_Comm<OpCom,O2,Args...> >::inf;
+
+	/**
+	 * @brief Elements higher to P
+	 */
+	using supNext = typename Partition<P,List_Op_Comm<OpCom,O2,Args...> >::sup;
 	
+	using concatInfVoid    = List_Op_Comm<OpCom,O1>;
+	using concatInfNonVoid = typename List_Op_Comm<OpCom,O1>::template append<infNext>::type;
+	
+	using concatInf = typename std::conditional
+					  <std::is_same<infNext,void>::value,
+					   concatInfVoid,
+					   concatInfNonVoid>::type;
+
 	using inf = typename std::conditional
-				<Order<O1,O2>::value,
-				infnext,
-				typename std::conditional
-					<std::is_same<infnext,void>::value,
-					List_Op_Comm<OpCom,O2>,
-					typename List_Op_Comm<OpCom,O2>::template append<infnext>::type >::type >::type;
+				<Order<P,O1>::value,
+				 infNext,
+				 concatInf >::type;
+
+	using concatSupVoid    = List_Op_Comm<OpCom,O1>;
+	using concatSupNonVoid = typename List_Op_Comm<OpCom,O1>::template append<supNext>::type;
+	
+	using concatSup = typename std::conditional
+					  <std::is_same<supNext,void>::value,
+					   concatSupVoid,
+					   concatSupNonVoid>::type;
 
 	using sup = typename std::conditional
-				<Order<O1,O2>::value,
-				typename std::conditional
-					<std::is_same<supnext,void>::value,
-					List_Op_Comm<OpCom,O2>,
-					typename List_Op_Comm<OpCom,O2>::template append<supnext>::type >::type,
-				supnext>::type;
+				<Order<P,O1>::value,
+				 concatSup,
+				 supNext  >::type;
 };
 
 
-
+/**
+ * @brief Sort the list of elements using a quicksort
+ */
 template<typename F>
 struct Sort {
 	using type = F;
@@ -121,18 +130,24 @@ template<typename OpCom, typename O1, typename O2, typename... Args>
 struct Sort<List_Op_Comm<OpCom,O1,O2,Args...> >
 {
 	using pivot = O1;
-	using inf = typename Sort<typename Separate<O1,List_Op_Comm<OpCom,O2,Args...> >::inf>::type;
-	using sup = typename Sort<typename Separate<O1,List_Op_Comm<OpCom,O2,Args...> >::sup>::type;
+	using inf = typename Sort<typename Partition<pivot,List_Op_Comm<OpCom,O2,Args...> >::inf>::type;
+	using sup = typename Sort<typename Partition<pivot,List_Op_Comm<OpCom,O2,Args...> >::sup>::type;
+
+	using concatSupVoid    = List_Op_Comm<OpCom,O1>;
+	using concatSupNonVoid = typename List_Op_Comm<OpCom,O1>::template append<sup>::type;
 
 	using inter = typename std::conditional
 					<std::is_same<sup,void>::value,
-					List_Op_Comm<OpCom,pivot>,
-					typename List_Op_Comm<OpCom,pivot>::template append<sup>::type >::type;
+					 concatSupVoid,
+					 concatSupNonVoid  >::type;
+
+	using concatInfVoid    = inter;
+	using concatInfNonVoid = typename inter::template rev_append<inf>::type;
 	
 	using type  = typename std::conditional
 					<std::is_same<inf,void>::value,
-					inter,
-					typename inter::template rev_append<inf>::type >::type;
+					concatInfVoid,
+					concatInfNonVoid  >::type;
 };
 
 template<typename O>

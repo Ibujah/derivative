@@ -27,7 +27,7 @@ SOFTWARE.
 
 #include <math.h>
 
-#include <differential/Derivative.hpp>
+#include <meta_operations/MetaOperations.hpp>
 #include <basic_operands/Integers.hpp>
 #include "Mult.hpp"
 #include "Inverse.hpp"
@@ -53,6 +53,16 @@ class Ln
 		{
 			using type = Ln<typename F<typename O::template apply_rec<F>::type>::type>;
 		};
+
+		/**
+		 * @brief Importance order
+		 */
+		static const unsigned int outerOrder = 3;
+
+		/**
+		 * @brief Importance order
+		 */
+		static const unsigned int innerOrder = 0;
 };
 
 template<typename O, typename A>

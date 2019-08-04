@@ -8,7 +8,7 @@
 #include <basic_operations/Mult.hpp>
 #include <basic_operations/Inverse.hpp>
 
-using F1 = Mult<Integer<2>,Inverse<X> >;
+using F1 = Mult<Positive<2>,Inverse<X> >;
 using F2 = Mult<X,Inverse<X> >;
 using F3 = Mult<X,Inverse<Plus<X,Y> > >;
 

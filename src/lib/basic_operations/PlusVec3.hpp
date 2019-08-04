@@ -22,75 +22,56 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-#ifndef _PLUS_H_
-#define _PLUS_H_
+#ifndef _PLUSVEC3_H_
+#define _PLUSVEC3_H_
 
 #include <meta_operations/MetaOperations.hpp>
-#include <basic_operands/Integers.hpp>
+#include <basic_operands/Vector3.hpp>
 #include "List_Op_Comm.hpp"
+#include "Plus.hpp"
 
-class OpPlus
+class OpPlusVec3
 {
 	public:
-		static inline double operation(double arg1, double arg2)
+		static inline Eigen::Vector3d operation(const Eigen::Vector3d& arg1, const Eigen::Vector3d& arg2)
 		{
 			return arg1 + arg2;	
 		};
 		
 		static constexpr char symb = '+';
-
-
-		template<typename O1, typename O2>
-		struct OpInt
-		{};
-
-		template<unsigned int n1, unsigned int n2>
-		struct OpInt<Positive<n1>,Positive<n2> >
-		{
-			using type = Positive<n1+n2>;
-		};
 		
-		template<unsigned int n1, unsigned int n2>
-		struct OpInt<Negative<n1>,Negative<n2> >
-		{
-			using type = Negative<n1+n2>;
-		};
+		template<typename T1, typename T2>
+		struct OpVec {};
 		
-		template<unsigned int n1, unsigned int n2>
-		struct OpInt<Positive<n1>,Negative<n2> >
+		template<typename XV1, typename YV1, typename ZV1, typename XV2, typename YV2, typename ZV2>
+		struct OpVec<Vector3<XV1,YV1,ZV1>,Vector3<XV2,YV2,ZV2> >
 		{
-			using type = typename std::conditional<
-							n1 >= n2,
-							Positive<n1 - n2>,
-							Negative<n2 - n1> >;
-		};
-		
-		template<unsigned int n1, unsigned int n2>
-		struct OpInt<Negative<n1>,Positive<n2> >
-		{
-			using type = typename OpInt<Positive<n2>,Negative<n1> >::type;
+			using type = Vector3<Plus<XV1,XV2>,Plus<YV1,YV2>,Plus<ZV1,ZV2> >;
 		};
 };
 
 template<typename O1, typename... Ops>
-using Plus = List_Op_Comm<OpPlus,O1,Ops...>;
+using PlusVec3 = List_Op_Comm<OpPlusVec3,O1,Ops...>;
 
 template<>
-struct Neutral<OpPlus>
+struct Neutral<OpPlusVec3>
 {
-	using type = Zero;
+	using type = Vector3<Zero,Zero,Zero>;
 };
 
 template<typename O1, typename A, typename... Ops>
-struct Der<Plus<O1,Ops...>, A>
+struct Der<PlusVec3<O1,Ops...>, A>
 {
-    using type = Plus<typename Der<O1,A>::type>;
+	using DerO1 = typename Der<O1,A>::type;
+    using type = PlusVec3<DerO1>;
 };
 
 template<typename O1, typename O2, typename A, typename... Ops>
-struct Der<Plus<O1,O2,Ops...>, A>
+struct Der<PlusVec3<O1,O2,Ops...>, A>
 {
-    using type = Plus<typename Der<O1,A>::type,typename Der<Plus<O2,Ops...>,A>::type>;
+	using DerO1 = typename Der<O1,A>::type;
+	using next  = typename Der<PlusVec3<O2,Ops...>,A>::type;
+    using type  = typename PlusVec3<DerO1>::template append<next>::type;
 };
 
-#endif //_PLUS_H_
+#endif //_PLUSVEC3_H_

@@ -25,7 +25,7 @@ SOFTWARE.
 #ifndef _EXP_H_
 #define _EXP_H_
 
-#include <differential/Derivative.hpp>
+#include <meta_operations/MetaOperations.hpp>
 #include <basic_operands/Integers.hpp>
 #include "Mult.hpp"
 #include <math.h>
@@ -51,6 +51,16 @@ class Exp
 		{
 			using type = Exp<typename F<typename O::template apply_rec<F>::type>::type>;
 		};
+
+		/**
+		 * @brief Importance order
+		 */
+		static const unsigned int outerOrder = 3;
+
+		/**
+		 * @brief Importance order
+		 */
+		static const unsigned int innerOrder = 0;
 };
 
 template<typename O, typename A>

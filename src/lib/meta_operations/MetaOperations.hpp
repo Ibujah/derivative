@@ -22,10 +22,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-#ifndef _DERIVATIVE_H_
-#define _DERIVATIVE_H_
+#ifndef _METAOPERATIONS_H_
+#define _METAOPERATIONS_H_
 
+/**
+ * @brief Derivation of F with respect to A
+ */
 template<typename F, typename A>
 struct Der {};
 
-#endif //_DERIVATIVE_H_
+/**
+ * @brief Simplification of F
+ */
+template<typename F>
+struct Simp;
+
+#endif //_METAOPERATIONS_H_

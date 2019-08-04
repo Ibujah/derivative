@@ -7,7 +7,7 @@
 #include <basic_operations/Pow.hpp>
 #include <basic_operations/Exp.hpp>
 
-using F1 = Pow<X,Integer<2> >;
+using F1 = Pow<X,Positive<2> >;
 using F2 = Pow<Exp<One>,X>;
 
 using DF1 = Der<F1,X>::type;
