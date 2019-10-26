@@ -25,7 +25,9 @@ SOFTWARE.
 #ifndef _PARAMETERS_H_
 #define _PARAMETERS_H_
 
-#include <meta_operations/MetaOperations.hpp>
+#include <meta/Operations.hpp>
+#include <meta/Leaf.hpp>
+#include <string>
 #include "Arguments.hpp"
 
 #include <sstream>
@@ -34,7 +36,7 @@ SOFTWARE.
  * @brief Class representing the n-th parameter of the function (because double can't be used as template value)
  */
 template<unsigned int n>
-class Parameter
+class LeafParameter
 {
     public:
 		/**
@@ -45,7 +47,7 @@ class Parameter
 		/**
 		 * 0brief Next parameter
 		 */
-        Parameter<n-1> p;
+        LeafParameter<n-1> p;
         
     public:
 		/**
@@ -54,69 +56,46 @@ class Parameter
 		 * @brief args_ Next values
 		 */
         template<typename ...Args>
-        Parameter(const double &a_, Args... args) : a(a_), p(args...)
+        LeafParameter(const double &a_, Args... args) : a(a_), p(args...)
         {};
         
 		/**
 		 * @brief Evaluation of the parameter value
 		 */
         template<unsigned int m, typename ...Args>
-        static inline double eval(const Parameter<m> &p, Args... args)
+        static inline double eval(const LeafParameter<m> &p, Args...)
         {
-            return Parameter<n-1>::eval(p.p);
+            return LeafParameter<n-1>::eval(p.p);
         };
         
 		/**
 		 * @brief Writing of the parameter value
 		 */
         template<unsigned int m, typename ...Args>
-        static std::string write(const Parameter<m> &p, Args... args)
+        static std::string write(const LeafParameter<m> &p, Args...)
         {
-            return Parameter<n-1>::write(p.p);
+            return LeafParameter<n-1>::write(p.p);
         };
-
-		/**
-		 * @brief Struct recursively applying the modifier F<T>
-		 */
-		template<template<typename T> typename F>
-		struct apply_rec
-		{
-			using type = typename F<Parameter<n> >::type;
-		};
-
-		/**
-		 * @brief Importance order
-		 */
-		static const unsigned int outerOrder = 2;
-
-		/**
-		 * @brief Importance order
-		 */
-		static const unsigned int innerOrder = 0;
 };
 
 template<>
-class Parameter<0>
-{};
-
-template<>
-class Parameter<1>
+class LeafParameter<1>
 {
     public:
         double a;
         
     public:
-        Parameter(const double &a_) : a(a_)
+        LeafParameter(const double &a_) : a(a_)
         {};
 
         template<unsigned int m, typename ...Args>
-        static inline double eval(const Parameter<m> &p, Args... args)
+        static inline double eval(const LeafParameter<m> &p, Args...)
         {
             return p.a;
         };
         
         template<unsigned int m,typename ...Args>
-        static std::string write(const Parameter<m> &p, Args... args)
+        static std::string write(const LeafParameter<m> &p, Args...)
         {
 			std::stringstream ss;
 			ss.precision(2);
@@ -128,19 +107,19 @@ class Parameter<1>
 		template<template<typename T> typename F>
 		struct apply_rec
 		{
-			using type = typename F<Parameter<1> >::type;
+			using type = typename F<LeafParameter<1> >::type;
 		};
-
-		/**
-		 * @brief Importance order
-		 */
-		static const unsigned int outerOrder = 2;
-
-		/**
-		 * @brief Importance order
-		 */
-		static const unsigned int innerOrder = 0;
 };
+
+template<>
+class LeafParameter<0>
+{};
+
+/**
+ * @brief Class representing a parameter as a leaf
+ */
+template<unsigned int n>
+using Parameter = Leaf<LeafParameter<n> >;
 
 /**
  * @brief Function of build quickly a set of parameters

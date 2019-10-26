@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-#ifndef _METAOPERATIONS_H_
-#define _METAOPERATIONS_H_
+#ifndef _OPERATIONS_H_
+#define _OPERATIONS_H_
 
 /**
  * @brief Derivation of F with respect to A
@@ -37,4 +37,4 @@ struct Der {};
 template<typename F>
 struct Simp;
 
-#endif //_METAOPERATIONS_H_
+#endif //_OPERATIONS_H_

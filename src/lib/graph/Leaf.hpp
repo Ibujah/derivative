@@ -22,70 +22,46 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-#ifndef _INTEGERS_H_
-#define _INTEGERS_H_
+#ifndef _LEAF_H_
+#define _LEAF_H_
 
-#include <meta/Operations.hpp>
-#include <meta/Leaf.hpp>
 #include <string>
 
 /**
- * @brief Class representing a positive or negative integer
- * @param n  Absolute value of the integer
- * @param p  True: positive, False: negative
+ * @brief Leaf of the function graph
  */
-template<unsigned int n, bool p>
-class LeafInteger
+template<typename A>
+class Leaf
 {
+	private:
+		/**
+		 * @brief Representing the value
+		 */
+		A m_val;
+
     public:
 		/**
-		 * @brief Evaluation of the integer value
+		 * @brief Constructor
+		 */
+		Leaf(const A& val) : m_val(val) {};
+
+		/**
+		 * @brief Evaluation of the leaf value
 		 */
         template<typename ...Args>
-        static inline double eval(Args...)
+        static inline double eval(Args... args)
         {
-			return (p?1.0:-1.0)*(double)n;
+			return A::eval(args...);
         };
 
 		/**
 		 * @brief Writing of the integer value
 		 */
         template<typename ...Args>
-        static std::string write(Args...)
+        static std::string write(Args... args)
         {
-			return (p?"":"-") + std::to_string(n);
+			return A::write(args...);
         };
 };
 
-/**
- * @brief Class representing an integer as a leaf
- */
-template<unsigned int n, bool p>
-using Integer = Leaf<LeafInteger<n,p> >;
-
-/**
- * @brief Class representing a shorter way to declare a positive integer
- */
-template<unsigned int n>
-using Positive = Integer<n,true>;
-
-/**
- * @brief Class representing a shorter way to declare a negative integer
- */
-template<unsigned int n>
-using Negative = Integer<n,false>;
-
-/**
- * @brief Derivative of the integer with respect to an argument
- */
-template<unsigned int n, bool p, typename A>
-struct Der<Integer<n,p>,A>
-{
-    using type = Integer<0,true>;
-};
-
-using Zero = Positive<0>;
-using One = Positive<1>;
-
-
-#endif //_INTEGERS_H_
+#endif //_LEAF_H_

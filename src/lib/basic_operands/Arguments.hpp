@@ -25,30 +25,32 @@ SOFTWARE.
 #ifndef _ARGUMENTS_H_
 #define _ARGUMENTS_H_
 
-#include <meta_operations/MetaOperations.hpp>
+#include <meta/Operations.hpp>
+#include <meta/Leaf.hpp>
+#include <string>
 #include "Integers.hpp"
 
 /**
  * @brief Class representing the n-th input argument of a function
  */
 template<unsigned int n>
-class Argument
+class LeafArgument
 {
     public:
 		/**
 		 * @brief Recursive evaluation of the n-th argument of the function
 		 */
         template<typename ...Args>
-        static inline double eval(const double &x, Args... args)
+        static inline double eval(const double &, Args... args)
         {
-            return Argument<n-1>::eval(args...);
+            return LeafArgument<n-1>::eval(args...);
         };
 
 		/**
 		 * @brief Recursive evaluation of the n-th argument of the function
 		 */
         template<typename T, typename ...Args>
-        static inline double eval(const T &val, Args... args)
+        static inline double eval(const T &, Args... args)
         {
             return eval(args...);
         };
@@ -57,69 +59,40 @@ class Argument
 		 * @brief Recursive writing of the n-th argument of the function
 		 */
         template<typename ...Args>
-        static std::string write(Args... args)
+        static std::string write(Args... )
         {
             return "x" + std::to_string(n);
         };
-		
-		/**
-		 * @brief Struct recursively applying the modifier F<T>
-		 */
-		template<template<typename T> typename F>
-		struct apply_rec
-		{
-			using type = typename F<Argument<n> >::type;
-		};
-
-		/**
-		 * @brief Importance order
-		 */
-		static const unsigned int outerOrder = 1;
-
-		/**
-		 * @brief Importance order
-		 */
-		static const unsigned int innerOrder = n;
 };
 
 template<>
-class Argument<0>
+class LeafArgument<0>
 {
     public:
         template<typename ...Args>
-        static inline double eval(const double &x, Args... args)
+        static inline double eval(const double &x, Args...)
         {
             return x;
         };
 
         template<typename T, typename ...Args>
-        static inline double eval(const T &val, Args... args)
+        static inline double eval(const T &, Args... args)
         {
             return eval(args...);
         };
 
         template<typename ...Args>
-        static std::string write(Args... args)
+        static std::string write(Args...)
         {
             return "x0";
         };
-		
-		template<template<typename T> typename F>
-		struct apply_rec
-		{
-			using type = typename F<Argument<0> >::type;
-		};
-
-		/**
-		 * @brief Importance order
-		 */
-		static const unsigned int outerOrder = 1;
-
-		/**
-		 * @brief Importance order
-		 */
-		static const unsigned int innerOrder = 0;
 };
+
+/**
+ * @brief Class representing an argument as a leaf
+ */
+template<unsigned int n>
+using Argument = Leaf<LeafArgument<n> >;
 
 /**
  * @brief Derivative of the argument with respect to an argument
